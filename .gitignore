@@ -12,3 +12,9 @@
 ./order-execution-service/yarn.lock
 ./order-execution-service/pnpm-lock.yaml
 ./order-execution-service/pnpm-workspace.yaml
+
+# Comprehensive node_modules ignore patterns
+**/node_modules/
+node_modules/
+*.log
+.DS_Store
