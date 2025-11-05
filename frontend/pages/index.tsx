@@ -40,7 +40,7 @@ export default function Home() {
 
     setSubmitting(true);
     try {
-      const res = await fetch('http://localhost:4000/orders/perp', {
+      const res = await fetch('http://localhost:4000/api/orders/perp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

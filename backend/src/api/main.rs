@@ -1,14 +1,24 @@
 use std::net::SocketAddr;
 
-use backend::app_router;
+use axum::{http::Method, Router};
+use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+mod api;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     init_tracing();
 
-    let app = app_router();
+    let cors = CorsLayer::new()
+        .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+        .allow_origin(Any)
+        .allow_headers(Any);
+
+    let app = Router::new()
+        .nest("/api", api::router())
+        .layer(cors);
 
     let addr: SocketAddr = "0.0.0.0:4000".parse()?;
     info!("backend listening on {addr}");
