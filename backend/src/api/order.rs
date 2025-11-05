@@ -1,9 +1,15 @@
-use axum::{Json, Router, response::IntoResponse, routing::post};
+use axum::{
+    Json, Router,
+    response::IntoResponse,
+    routing::{get, post},
+};
 use serde::{Deserialize, Serialize};
 use tracing::{info, instrument};
 
 pub fn routes() -> Router {
-    Router::new().route("/perp", post(create_perp_order))
+    Router::new()
+        .route("/perp", post(create_perp_order))
+        .route("/mock", get(mock_order))
 }
 
 #[instrument(skip_all)]
@@ -26,6 +32,23 @@ pub async fn process_perp_order(payload: PerpOrderRequest) -> OrderAccepted {
     OrderAccepted {
         status: "accepted".to_string(),
         echo: payload,
+    }
+}
+
+async fn mock_order() -> impl IntoResponse {
+    Json(mock_order_payload())
+}
+
+pub fn mock_order_payload() -> OrderAccepted {
+    OrderAccepted {
+        status: "mock".to_string(),
+        echo: PerpOrderRequest {
+            wallet: "mock-wallet-111".to_string(),
+            asset: "SOL-PERP".to_string(),
+            side: OrderSide::Long,
+            leverage: 5.0,
+            initial_amount: 1.25,
+        },
     }
 }
 

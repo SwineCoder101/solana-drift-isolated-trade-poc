@@ -6,3 +6,9 @@
 ./frontend/pnpm-lock.yaml
 ./frontend/pnpm-workspace.yaml
 ./frontend/pnpm-workspace.yaml
+.vercel
+./order-execution-service/node_modules
+./order-execution-service/package-lock.json
+./order-execution-service/yarn.lock
+./order-execution-service/pnpm-lock.yaml
+./order-execution-service/pnpm-workspace.yaml

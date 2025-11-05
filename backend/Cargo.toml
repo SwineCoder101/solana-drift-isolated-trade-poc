@@ -9,7 +9,7 @@ path = "src/main.rs"
 
 [[bin]]
 name = "backend_vercel"
-path = "api/main.rs"
+path = "api/[...path].rs"
 
 [dependencies]
 anyhow = "1.0"
