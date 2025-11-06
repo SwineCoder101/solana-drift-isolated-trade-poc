@@ -24,6 +24,12 @@ pub struct TransferMarginRequest {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct IsolatedBalanceQuery {
+	pub wallet: String,
+	pub market: String,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct WalletQuery {
 	pub wallet: String,
 }

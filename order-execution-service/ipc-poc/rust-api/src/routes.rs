@@ -13,8 +13,8 @@ use tracing::info;
 use crate::{
 	ipc::{IpcError, TsIpc},
 	types::{
-		ApiErrorBody, ClosePositionRequest, MarketQuery, OpenIsolatedRequest,
-		TransferMarginRequest, WalletQuery,
+		ApiErrorBody, ClosePositionRequest, IsolatedBalanceQuery, MarketQuery,
+		OpenIsolatedRequest, TransferMarginRequest, WalletQuery,
 	},
 };
 
@@ -28,6 +28,10 @@ pub fn router(state: AppState) -> Router {
 		.route("/positions", get(get_positions))
 		.route("/trade-history", get(get_trades))
 		.route("/markets/:symbol", get(get_market))
+		.route(
+			"/positions/isolated-balance",
+			get(get_isolated_balance),
+		)
 		.route("/orders/open-isolated", post(open_isolated))
 		.route("/orders/close", post(close_position))
 		.route("/margin/transfer", post(transfer_margin))
@@ -213,6 +217,23 @@ async fn get_market(
 	state
 		.ipc
 		.call("getMarket", args, Duration::from_secs(5))
+		.await
+		.map(Json)
+		.map_err(map_ipc_error)
+}
+
+async fn get_isolated_balance(
+	State(state): State<AppState>,
+	Query(query): Query<IsolatedBalanceQuery>,
+) -> Result<Json<Value>, ApiError> {
+	validate_wallet(&query.wallet)?;
+	let args = json!({
+		"wallet": query.wallet,
+		"market": query.market,
+	});
+	state
+		.ipc
+		.call("getIsolatedBalance", args, Duration::from_secs(5))
 		.await
 		.map(Json)
 		.map_err(map_ipc_error)

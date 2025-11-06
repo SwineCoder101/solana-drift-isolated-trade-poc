@@ -6,12 +6,13 @@ import {
 	TransferMarginReqSchema,
 	WalletOnlySchema,
 	MarketQuerySchema,
+	IsolatedBalanceSchema,
 	RequestValidators,
 	IpcRequestSchema,
 	type FnName,
 	type IpcFailure,
 	type IpcSuccess,
-} from './types';
+} from './types.js';
 import {
 	buildOpenIsolatedTx,
 	buildClosePositionTx,
@@ -19,6 +20,7 @@ import {
 	getPositions,
 	getTrades,
 	getMarket,
+	getIsolatedBalance,
 } from './drift';
 
 type HandlerMap = {
@@ -49,6 +51,10 @@ const handlers: HandlerMap = {
 	getMarket: async (args) => {
 		const parsed = MarketQuerySchema.parse(args);
 		return getMarket(parsed);
+	},
+	getIsolatedBalance: async (args) => {
+		const parsed = IsolatedBalanceSchema.parse(args);
+		return getIsolatedBalance(parsed);
 	},
 };
 

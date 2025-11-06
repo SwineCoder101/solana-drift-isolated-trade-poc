@@ -24,21 +24,22 @@ import {
 	PRICE_PRECISION,
 	FUNDING_RATE_PRECISION,
 	convertToNumber,
+	type UserAccount,
+	type PerpMarketAccount,
+	type SpotMarketAccount,
+	type PerpPosition,
 } from '@drift-labs/sdk';
-import type {
-	PerpMarketAccount,
-	SpotMarketAccount,
-	UserAccount,
-	PerpPosition,
-} from '@drift-labs/sdk/lib/node/types';
+
 import { RPC_URL, NETWORK, getServerKeypair } from './env';
-import type {
-	OpenIsolatedReq,
+import {
 	ClosePositionReq,
+	IsolatedBalanceReq,
+	MarketQueryReq,
+	OpenIsolatedReq,
 	TransferMarginReq,
 	WalletOnlyReq,
-	MarketQueryReq,
-} from './types';
+} from './types.js';
+
 
 type DriftTx = Transaction | VersionedTransaction;
 
@@ -580,5 +581,21 @@ export async function getMarket(req: MarketQueryReq) {
 		price,
 		mark,
 		funding,
+	};
+}
+
+export async function getIsolatedBalance(req: IsolatedBalanceReq) {
+	const walletPk = new PublicKey(req.wallet);
+	const marketCfg = resolveMarketConfig(req.market);
+
+	const amount = await withAuthority(walletPk, async () => {
+		return driftClient.getIsolatedPerpPositionTokenAmount(
+			marketCfg.marketIndex
+		);
+	});
+
+	return {
+		market: marketCfg.symbol,
+		tokenAmount: convertToNumber(amount, QUOTE_PRECISION),
 	};
 }
