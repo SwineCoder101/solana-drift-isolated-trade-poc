@@ -157,19 +157,17 @@ function logInstruction(label: string, wallet: PublicKey, mint: PublicKey) {
 	);
 }
 
-function createCloseAccountIx(
-	account: PublicKey,
-	destination: PublicKey,
-	authority: PublicKey
-): TransactionInstruction {
-	return new TransactionInstruction({
-		programId: TOKEN_PROGRAM_ID,
-		keys: [
-			{ pubkey: account, isSigner: false, isWritable: true },
-			{ pubkey: destination, isSigner: false, isWritable: true },
-			{ pubkey: authority, isSigner: true, isWritable: false },
-		],
-		data: Buffer.from([9]),
+async function ensureDriftUserCached(
+	wallet: PublicKey,
+	userAccount?: UserAccount | null
+) {
+	if (!userAccount) {
+		return;
+	}
+	await withAuthority(wallet, async () => {
+		if (!driftClient.hasUser(0, wallet)) {
+			await driftClient.addUser(0, wallet, userAccount);
+		}
 	});
 }
 
@@ -230,6 +228,23 @@ function deriveAta(owner: PublicKey, mint: PublicKey, tokenProgram: PublicKey): 
 		[owner.toBuffer(), tokenProgram.toBuffer(), mint.toBuffer()],
 		ASSOCIATED_TOKEN_PROGRAM_ID
 	)[0];
+}
+
+function createCloseAccountIx(
+	account: PublicKey,
+	destination: PublicKey,
+	authority: PublicKey,
+	tokenProgram: PublicKey = TOKEN_PROGRAM_ID
+): TransactionInstruction {
+	return new TransactionInstruction({
+		programId: tokenProgram,
+		keys: [
+			{ pubkey: account, isSigner: false, isWritable: true },
+			{ pubkey: destination, isSigner: false, isWritable: true },
+			{ pubkey: authority, isSigner: true, isWritable: false },
+		],
+		data: Buffer.from([9]),
+	});
 }
 
 function resolveMarketConfig(requested: string): PerpMarketConfig {
@@ -416,6 +431,7 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 
 	const initIxs = await ensureUserInitIxs(walletPk);
 	const userAccount = await fetchUserAccount(walletPk);
+	await ensureDriftUserCached(walletPk, userAccount);
 
 	console.log('userAccount: ', userAccount);
 	console.log('userPk: ', userPk);
@@ -750,6 +766,7 @@ export async function buildDepositNativeSolTx(req: DepositNativeReq) {
 
 	const initIxs = await ensureUserInitIxs(walletPk);
 	const userAccount = await fetchUserAccount(walletPk);
+	await ensureDriftUserCached(walletPk, userAccount);
 	const userInitialized = !!userAccount;
 
 	const spotMarket = driftClient.getSpotMarketAccount(
@@ -895,10 +912,16 @@ export async function buildDepositTokenTx(req: DepositTokenReq) {
 
 	const initIxs = await ensureUserInitIxs(walletPk);
 	const userAccount = await fetchUserAccount(walletPk);
+	await ensureDriftUserCached(walletPk, userAccount);
 	const userInitialized = !!userAccount;
 
 	const tokenProgram = driftClient.getTokenProgramForSpotMarket(spotMarket);
-	const associatedAccount = deriveAta(walletPk, spotMarket.mint, tokenProgram);
+	const associatedAccount = await driftClient.getAssociatedTokenAccount(
+		spotConfig.marketIndex,
+		false,
+		tokenProgram,
+		walletPk
+	);
 
 	const instructions: TransactionInstruction[] = [...initIxs];
 	const accountInfo = await connection.getAccountInfo(associatedAccount);
