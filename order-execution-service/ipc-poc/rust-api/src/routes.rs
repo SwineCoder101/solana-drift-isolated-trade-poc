@@ -13,7 +13,7 @@ use tracing::info;
 use crate::{
 	ipc::{IpcError, TsIpc},
 	types::{
-		ApiErrorBody, ClosePositionRequest, IsolatedBalanceQuery, MarketQuery,
+		ApiErrorBody, ClosePositionRequest, IsolatedBalanceQuery,
 		OpenIsolatedRequest, TransferMarginRequest, WalletQuery,
 	},
 };
@@ -32,6 +32,7 @@ pub fn router(state: AppState) -> Router {
 			"/positions/isolated-balance",
 			get(get_isolated_balance),
 		)
+		.route("/server/public-key", get(get_server_public_key))
 		.route("/orders/open-isolated", post(open_isolated))
 		.route("/orders/close", post(close_position))
 		.route("/margin/transfer", post(transfer_margin))
@@ -234,6 +235,18 @@ async fn get_isolated_balance(
 	state
 		.ipc
 		.call("getIsolatedBalance", args, Duration::from_secs(5))
+		.await
+		.map(Json)
+		.map_err(map_ipc_error)
+}
+
+async fn get_server_public_key(
+	State(state): State<AppState>,
+) -> Result<Json<Value>, ApiError> {
+	let args = json!({});
+	state
+		.ipc
+		.call("getServerPublicKey", args, Duration::from_secs(5))
 		.await
 		.map(Json)
 		.map_err(map_ipc_error)

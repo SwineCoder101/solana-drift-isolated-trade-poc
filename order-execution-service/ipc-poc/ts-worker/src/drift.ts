@@ -5,6 +5,7 @@ import {
 	Transaction,
 	TransactionInstruction,
 	VersionedTransaction,
+	type TransactionVersion,
 } from '@solana/web3.js';
 import {
 	BN,
@@ -28,9 +29,10 @@ import {
 	type PerpMarketAccount,
 	type SpotMarketAccount,
 	type PerpPosition,
+	type IWallet,
 } from '@drift-labs/sdk';
 
-import { RPC_URL, NETWORK, getServerKeypair } from './env';
+import { RPC_URL, NETWORK, getServerKeypair } from './env.js';
 import {
 	ClosePositionReq,
 	IsolatedBalanceReq,
@@ -52,6 +54,9 @@ const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
 
 class ReadonlyWallet {
 	public readonly publicKey: PublicKey;
+	public readonly supportedTransactionVersions: ReadonlySet<TransactionVersion> | null =
+		new Set<TransactionVersion>([0, 'legacy']);
+	public readonly payer: Keypair | undefined = undefined;
 
 	constructor(publicKey: PublicKey) {
 		this.publicKey = publicKey;
@@ -64,6 +69,18 @@ class ReadonlyWallet {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	async signAllTransactions<T extends DriftTx[]>(txs: T): Promise<T> {
+		return txs;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/require-await
+	async signVersionedTransaction(tx: VersionedTransaction): Promise<VersionedTransaction> {
+		return tx;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/require-await
+	async signAllVersionedTransactions<T extends VersionedTransaction[]>(
+		txs: T
+	): Promise<T> {
 		return txs;
 	}
 }
@@ -115,7 +132,8 @@ function normaliseMarketKey(value: string): string {
 }
 
 function buildMarketMaps(): MarketMaps {
-	const configs = PerpMarkets[NETWORK];
+	const envKey = NETWORK as keyof typeof PerpMarkets;
+	const configs = PerpMarkets[envKey] ?? [];
 	const bySymbol = new Map<string, PerpMarketConfig>();
 	const byIndex = new Map<number, PerpMarketConfig>();
 
@@ -167,9 +185,9 @@ async function withAuthority<T>(
 		}).userStatsAccountPublicKey;
 
 		(driftClient as unknown as { authority: PublicKey }).authority = authority;
-		(driftClient as { wallet: ReadonlyWallet }).wallet = new ReadonlyWallet(
-			authority
-		);
+		(
+			driftClient as unknown as { wallet: IWallet }
+		).wallet = new ReadonlyWallet(authority);
 		(driftClient as { userStatsAccountPublicKey?: PublicKey }).userStatsAccountPublicKey =
 			undefined;
 
@@ -178,7 +196,7 @@ async function withAuthority<T>(
 		} finally {
 			(driftClient as unknown as { authority: PublicKey }).authority =
 				originalAuthority;
-			(driftClient as { wallet: Wallet }).wallet = originalWallet;
+			(driftClient as unknown as { wallet: IWallet }).wallet = originalWallet;
 			(driftClient as { userStatsAccountPublicKey?: PublicKey }).userStatsAccountPublicKey =
 				originalUserStatsPk;
 		}
@@ -244,12 +262,10 @@ async function buildTransaction(
 	const { blockhash, lastValidBlockHeight } =
 		await connection.getLatestBlockhash();
 
-	const tx = new Transaction({
-		feePayer,
-		recentBlockhash: blockhash,
-		lastValidBlockHeight,
-	});
-
+	const tx = new Transaction({ feePayer });
+	tx.recentBlockhash = blockhash;
+	(tx as Partial<Transaction> & { lastValidBlockHeight?: number }).lastValidBlockHeight =
+		lastValidBlockHeight;
 	tx.add(...instructions);
 
 	const serialized = tx.serialize({
@@ -598,4 +614,8 @@ export async function getIsolatedBalance(req: IsolatedBalanceReq) {
 		market: marketCfg.symbol,
 		tokenAmount: convertToNumber(amount, QUOTE_PRECISION),
 	};
+}
+
+export function getServerPublicKey(): string {
+	return baseWallet.publicKey.toBase58();
 }

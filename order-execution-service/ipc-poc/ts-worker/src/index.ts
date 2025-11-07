@@ -1,5 +1,5 @@
-import { initDrift } from './drift';
-import { startIpc } from './ipc';
+import { initDrift } from './drift.js';
+import { startIpc } from './ipc.js';
 
 async function main() {
 	await initDrift();

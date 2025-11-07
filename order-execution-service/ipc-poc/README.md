@@ -42,3 +42,4 @@ The Rust API listens on `http://0.0.0.0:8080` and launches the worker automatica
    ```
    Expect a JSON payload with `txBase64` and `meta`.
 5. Kill the spawned Node process and repeat step 3 to verify automatic restart and retry succeeds.
+6. Fetch the server wallet: `curl http://localhost:8080/server/public-key`

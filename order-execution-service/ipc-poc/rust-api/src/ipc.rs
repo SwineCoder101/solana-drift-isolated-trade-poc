@@ -1,4 +1,3 @@
-use anyhow::Context;
 use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
@@ -164,7 +163,7 @@ impl Inner {
 
 	async fn handle_worker_failure(self: &Arc<Self>) {
 		let mut guard = self.worker.lock().await;
-		if let Some(worker) = guard.take() {
+		if let Some(mut worker) = guard.take() {
 			warn!("tearing down crashed worker");
 			let _ = worker.child.kill().await;
 			worker.reader.abort();
@@ -286,7 +285,7 @@ impl Drop for TsIpc {
 		let inner = Arc::clone(&self.inner);
 		tokio::spawn(async move {
 			let mut guard = inner.worker.lock().await;
-			if let Some(worker) = guard.take() {
+			if let Some(mut worker) = guard.take() {
 				let _ = worker.child.kill().await;
 				worker.reader.abort();
 			}

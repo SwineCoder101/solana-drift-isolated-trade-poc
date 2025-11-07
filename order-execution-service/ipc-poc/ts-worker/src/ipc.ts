@@ -7,6 +7,7 @@ import {
 	WalletOnlySchema,
 	MarketQuerySchema,
 	IsolatedBalanceSchema,
+	EmptyArgsSchema,
 	RequestValidators,
 	IpcRequestSchema,
 	type FnName,
@@ -21,7 +22,8 @@ import {
 	getTrades,
 	getMarket,
 	getIsolatedBalance,
-} from './drift';
+	getServerPublicKey,
+} from './drift.js';
 
 type HandlerMap = {
 	[K in FnName]: (args: unknown) => Promise<unknown>;
@@ -55,6 +57,10 @@ const handlers: HandlerMap = {
 	getIsolatedBalance: async (args) => {
 		const parsed = IsolatedBalanceSchema.parse(args);
 		return getIsolatedBalance(parsed);
+	},
+	getServerPublicKey: async (args) => {
+		EmptyArgsSchema.parse(args);
+		return { publicKey: getServerPublicKey() };
 	},
 };
 

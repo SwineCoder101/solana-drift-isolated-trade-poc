@@ -30,7 +30,7 @@ async fn main() -> anyhow::Result<()> {
 			.layer(CorsLayer::permissive()),
 	);
 
-	let addr: SocketAddr = ([0, 0, 0, 0], 8080).into();
+	let addr: SocketAddr = ([127, 0, 0, 1], 8080).into();
 	info!(%addr, "starting Axum API");
 
 	axum::serve(
