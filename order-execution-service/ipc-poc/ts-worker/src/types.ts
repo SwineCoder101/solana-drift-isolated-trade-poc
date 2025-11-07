@@ -41,9 +41,16 @@ export const IsolatedBalanceSchema = z.object({
 
 export const EmptyArgsSchema = z.object({}).optional();
 
+export const DepositNativeReqSchema = z.object({
+	wallet: z.string().min(32),
+	amount: z.number().positive(),
+	market: z.string().min(1).optional(),
+});
+
 export type WalletOnlyReq = z.infer<typeof WalletOnlySchema>;
 export type MarketQueryReq = z.infer<typeof MarketQuerySchema>;
 export type IsolatedBalanceReq = z.infer<typeof IsolatedBalanceSchema>;
+export type DepositNativeReq = z.infer<typeof DepositNativeReqSchema>;
 
 export const FnNames = [
 	'openIsolated',
@@ -54,6 +61,8 @@ export const FnNames = [
 	'getMarket',
 	'getIsolatedBalance',
 	'getServerPublicKey',
+	'getPositionDetails',
+	'depositNativeSol',
 ] as const;
 
 export type FnName = (typeof FnNames)[number];
@@ -67,6 +76,8 @@ export const RequestValidators: Record<FnName, z.ZodTypeAny> = {
 	getMarket: MarketQuerySchema,
 	getIsolatedBalance: IsolatedBalanceSchema,
 	getServerPublicKey: EmptyArgsSchema,
+	getPositionDetails: WalletOnlySchema,
+	depositNativeSol: DepositNativeReqSchema,
 };
 
 export const FnEnum = z.enum(FnNames);

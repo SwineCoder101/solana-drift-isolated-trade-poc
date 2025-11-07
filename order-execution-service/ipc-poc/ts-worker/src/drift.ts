@@ -12,7 +12,11 @@ import {
 	DriftClient,
 	Wallet,
 	PerpMarkets,
+	SpotMarkets,
+	User,
+	OneShotUserAccountSubscriber,
 	type PerpMarketConfig,
+	type SpotMarketConfig,
 	getUserAccountPublicKeySync,
 	getUserStatsAccountPublicKey,
 	getMarketOrderParams,
@@ -24,7 +28,9 @@ import {
 	BASE_PRECISION,
 	PRICE_PRECISION,
 	FUNDING_RATE_PRECISION,
+	ZERO,
 	convertToNumber,
+	WRAPPED_SOL_MINT,
 	type UserAccount,
 	type PerpMarketAccount,
 	type SpotMarketAccount,
@@ -33,6 +39,8 @@ import {
 } from '@drift-labs/sdk';
 
 import { RPC_URL, NETWORK, getServerKeypair } from './env.js';
+import bs58 from 'bs58';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import {
 	ClosePositionReq,
 	IsolatedBalanceReq,
@@ -40,6 +48,7 @@ import {
 	OpenIsolatedReq,
 	TransferMarginReq,
 	WalletOnlyReq,
+	DepositNativeReq,
 } from './types.js';
 
 
@@ -118,7 +127,13 @@ type MarketMaps = {
 	byIndex: Map<number, PerpMarketConfig>;
 };
 
+type SpotMarketMaps = {
+	bySymbol: Map<string, SpotMarketConfig>;
+	byIndex: Map<number, SpotMarketConfig>;
+};
+
 let marketMaps: MarketMaps | null = null;
+let spotMarketMaps: SpotMarketMaps | null = null;
 let initialized = false;
 
 function ensureInitialized() {
@@ -129,6 +144,22 @@ function ensureInitialized() {
 
 function normaliseMarketKey(value: string): string {
 	return value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '_');
+}
+
+function createCloseAccountIx(
+	account: PublicKey,
+	destination: PublicKey,
+	authority: PublicKey
+): TransactionInstruction {
+	return new TransactionInstruction({
+		programId: TOKEN_PROGRAM_ID,
+		keys: [
+			{ pubkey: account, isSigner: false, isWritable: true },
+			{ pubkey: destination, isSigner: false, isWritable: true },
+			{ pubkey: authority, isSigner: true, isWritable: false },
+		],
+		data: Buffer.from([9]),
+	});
 }
 
 function buildMarketMaps(): MarketMaps {
@@ -158,6 +189,26 @@ function buildMarketMaps(): MarketMaps {
 	return { bySymbol, byIndex };
 }
 
+function buildSpotMarketMaps(): SpotMarketMaps {
+	const envKey = NETWORK as keyof typeof SpotMarkets;
+	const configs = SpotMarkets[envKey] ?? [];
+	const bySymbol = new Map<string, SpotMarketConfig>();
+	const byIndex = new Map<number, SpotMarketConfig>();
+	for (const cfg of configs) {
+		byIndex.set(cfg.marketIndex, cfg);
+		const synonyms = new Set<string>([
+			cfg.symbol.toUpperCase(),
+			normaliseMarketKey(cfg.symbol),
+		]);
+		for (const key of synonyms) {
+			if (!bySymbol.has(key)) {
+				bySymbol.set(key, cfg);
+			}
+		}
+	}
+	return { bySymbol, byIndex };
+}
+
 function resolveMarketConfig(requested: string): PerpMarketConfig {
 	if (!marketMaps) {
 		marketMaps = buildMarketMaps();
@@ -169,6 +220,18 @@ function resolveMarketConfig(requested: string): PerpMarketConfig {
 	}
 
 	throw new Error(`Unknown perp market: ${requested}`);
+}
+
+function resolveSpotMarketConfig(requested?: string): SpotMarketConfig {
+	if (!spotMarketMaps) {
+		spotMarketMaps = buildSpotMarketMaps();
+	}
+	const key = requested ? normaliseMarketKey(requested) : 'SOL';
+	const cfg = spotMarketMaps.bySymbol.get(key);
+	if (cfg) {
+		return cfg;
+	}
+	throw new Error(`Unknown spot market: ${requested ?? 'SOL'}`);
 }
 
 async function withAuthority<T>(
@@ -251,10 +314,15 @@ async function fetchUserAccount(wallet: PublicKey): Promise<UserAccount | null> 
 	return (account as UserAccount | null) ?? null;
 }
 
+type BuiltTx = {
+	txBase64: string;
+	signatures: string[];
+};
+
 async function buildTransaction(
 	feePayer: PublicKey,
 	instructions: TransactionInstruction[]
-): Promise<{ txBase64: string }> {
+): Promise<BuiltTx> {
 	if (instructions.length === 0) {
 		throw new Error('No instructions to build');
 	}
@@ -273,7 +341,12 @@ async function buildTransaction(
 		verifySignatures: false,
 	});
 
-	return { txBase64: Buffer.from(serialized).toString('base64') };
+	const signatures = tx.signatures.map(({ signature }) => {
+		const bytes = signature ?? new Uint8Array(64);
+		return bs58.encode(bytes);
+	});
+
+	return { txBase64: Buffer.from(serialized).toString('base64'), signatures };
 }
 
 function calcEntryPrice(position: PerpPosition): number | null {
@@ -321,15 +394,31 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 	const initIxs = await ensureUserInitIxs(walletPk);
 	const userAccount = await fetchUserAccount(walletPk);
 
+	console.log('userAccount: ', userAccount);
+	console.log('userPk: ', userPk);
+	console.log('walletPk: ', walletPk);
+	console.log('marketConfig: ', marketConfig);
+	console.log('perpMarket: ', perpMarket);
+	console.log('spotMarket: ', spotMarket);
+	console.log('spotMarketIndex: ', spotMarketIndex);
+	console.log('depositAmount: ', depositAmount);
+	console.log('baseAmount: ', baseAmount);
+
 	const userStatsPk = getUserStatsAccountPublicKey(
 		driftClient.program.programId,
 		walletPk
 	);
 
+	console.log('walletPk: ', walletPk);
+	console.log('Mint: ', spotMarket.mint);
+	
 	const userTokenAccount = findAssociatedTokenAddress(
 		walletPk,
 		spotMarket.mint
 	);
+
+	console.log('userTokenAccount: ', userTokenAccount);
+
 
 	const depositIx = await withAuthority(walletPk, async () => {
 		const remainingAccounts = driftClient.getRemainingAccounts({
@@ -390,13 +479,13 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 		estLiquidationPrice: null as number | null,
 	};
 
-	const { txBase64 } = await buildTransaction(walletPk, [
+	const { txBase64, signatures } = await buildTransaction(walletPk, [
 		...initIxs,
 		depositIx,
 		orderIx,
 	]);
 
-	return { txBase64, meta };
+	return { txBase64, signatures, meta };
 }
 
 export async function buildClosePositionTx(req: ClosePositionReq) {
@@ -463,8 +552,8 @@ export async function buildClosePositionTx(req: ClosePositionReq) {
 		});
 	});
 
-	const { txBase64 } = await buildTransaction(walletPk, [orderIx]);
-	return { txBase64 };
+	const { txBase64, signatures } = await buildTransaction(walletPk, [orderIx]);
+	return { txBase64, signatures };
 }
 
 export async function buildTransferIsolatedMarginTx(req: TransferMarginReq) {
@@ -532,8 +621,8 @@ export async function buildTransferIsolatedMarginTx(req: TransferMarginReq) {
 		instructions.push(...withdrawIxs);
 	}
 
-	const { txBase64 } = await buildTransaction(walletPk, instructions);
-	return { txBase64 };
+	const { txBase64, signatures } = await buildTransaction(walletPk, instructions);
+	return { txBase64, signatures };
 }
 
 export async function getPositions(req: WalletOnlyReq) {
@@ -618,4 +707,147 @@ export async function getIsolatedBalance(req: IsolatedBalanceReq) {
 
 export function getServerPublicKey(): string {
 	return baseWallet.publicKey.toBase58();
+}
+
+export async function buildDepositNativeSolTx(req: DepositNativeReq) {
+	if (!Number.isFinite(req.amount) || req.amount <= 0) {
+		throw new Error('amount must be positive');
+	}
+	const walletPk = new PublicKey(req.wallet);
+	const spotConfig = resolveSpotMarketConfig(req.market ?? 'SOL');
+	const lamports = new BN(Math.round(req.amount * LAMPORTS_PER_SOL));
+	if (lamports.lte(ZERO)) {
+		throw new Error('amount too small');
+	}
+
+	const initIxs = await ensureUserInitIxs(walletPk);
+	const userAccount = await fetchUserAccount(walletPk);
+	const userInitialized = !!userAccount;
+
+	const spotMarket = driftClient.getSpotMarketAccount(
+		spotConfig.marketIndex
+	) as SpotMarketAccount;
+
+	const instructions: TransactionInstruction[] = [...initIxs];
+	let depositAccount = walletPk;
+	let wrappedAccount: PublicKey | null = null;
+
+	if (spotMarket.mint.equals(WRAPPED_SOL_MINT)) {
+		const wrap = await withAuthority(walletPk, async () => {
+			return driftClient.getWrappedSolAccountCreationIxs(lamports, true);
+		});
+		wrappedAccount = wrap.pubkey;
+		depositAccount = wrap.pubkey;
+		instructions.push(...wrap.ixs);
+	}
+
+	const depositIx = await withAuthority(walletPk, async () => {
+		return driftClient.getDepositInstruction(
+			lamports,
+			spotConfig.marketIndex,
+			depositAccount,
+			undefined,
+			false,
+			userInitialized
+		);
+	});
+	instructions.push(depositIx);
+
+	if (wrappedAccount) {
+		instructions.push(createCloseAccountIx(wrappedAccount, walletPk, walletPk));
+	}
+
+	const { txBase64, signatures } = await buildTransaction(walletPk, instructions);
+	return { txBase64, signatures };
+}
+
+export async function getPositionDetails(req: WalletOnlyReq) {
+	const walletPk = new PublicKey(req.wallet);
+	const userAccount = await fetchUserAccount(walletPk);
+	if (!userAccount) {
+		return [];
+	}
+
+	if (!marketMaps) {
+		marketMaps = buildMarketMaps();
+	}
+
+	let userHelper: User | null = null;
+	try {
+		const subscriber = new OneShotUserAccountSubscriber(
+			driftClient.program,
+			walletPk,
+			userAccount
+		);
+		userHelper = new User({
+			driftClient,
+			userAccountPublicKey: walletPk,
+			accountSubscription: {
+				type: 'custom',
+				userAccountSubscriber: subscriber,
+			},
+		});
+		userHelper.isSubscribed = true;
+	} catch (err) {
+		console.warn('position details: unable to init user helper', err);
+	}
+
+	return userAccount.perpPositions
+		.filter((pos) => !pos.baseAssetAmount.eq(new BN(0)))
+		.map((pos) => {
+			const marketCfg = marketMaps?.byIndex.get(pos.marketIndex);
+			const perpMarket = driftClient.getPerpMarketAccount(
+				pos.marketIndex
+			) as PerpMarketAccount;
+			const oracle = driftClient.getOracleDataForPerpMarket(pos.marketIndex);
+
+			const size = convertToNumber(pos.baseAssetAmount, BASE_PRECISION);
+			const entryPriceBn = calculateEntryPrice(pos);
+			const entryPrice =
+				entryPriceBn.isZero() ?
+					null :
+					convertToNumber(entryPriceBn, PRICE_PRECISION);
+			const currentPrice = convertToNumber(oracle.price, PRICE_PRECISION);
+			const pnl = calculatePositionPNL(perpMarket, pos, true, oracle);
+			const unrealizedPnl = convertToNumber(pnl, QUOTE_PRECISION);
+
+			const margin = convertToNumber(
+				pos.isolatedPositionScaledBalance ?? ZERO,
+				QUOTE_PRECISION
+			);
+			const notional = Math.abs(size) * currentPrice;
+			const leverage =
+				margin > 0 ? Number((notional / margin).toFixed(4)) : null;
+
+			let liquidationPrice: number | null = null;
+			if (userHelper) {
+				try {
+					const liqBn = userHelper.liquidationPrice(
+						pos.marketIndex,
+						undefined,
+						undefined,
+						'Maintenance',
+						false,
+						new BN(0),
+						false,
+						'Isolated'
+					);
+					if (liqBn && liqBn.gt(new BN(0))) {
+						liquidationPrice = convertToNumber(liqBn, PRICE_PRECISION);
+					}
+				} catch (err) {
+					console.warn('position details: liq price error', err);
+				}
+			}
+
+			return {
+				market: marketCfg?.symbol ?? `MARKET_${pos.marketIndex}`,
+				positionSize: size,
+				entryPrice,
+				currentPrice,
+				unrealizedPnl,
+				leverage,
+				liquidationPrice,
+			};
+		});
 }

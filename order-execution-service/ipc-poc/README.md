@@ -34,6 +34,7 @@ The Rust API listens on `http://0.0.0.0:8080` and launches the worker automatica
 1. Compile the worker: `cd ts-worker && yarn build`
 2. Start the API: `cd ../rust-api && cargo run`
 3. Query positions: `curl "http://localhost:8080/positions?wallet=<PUBKEY>"`
+   - Detailed metrics: `curl "http://localhost:8080/positions/details?wallet=<PUBKEY>"`
 4. Build an open order tx:
    ```bash
    curl -X POST http://localhost:8080/orders/open-isolated \
@@ -43,3 +44,9 @@ The Rust API listens on `http://0.0.0.0:8080` and launches the worker automatica
    Expect a JSON payload with `txBase64` and `meta`.
 5. Kill the spawned Node process and repeat step 3 to verify automatic restart and retry succeeds.
 6. Fetch the server wallet: `curl http://localhost:8080/server/public-key`
+7. Deposit native SOL collateral (example for 0.5 SOL):
+   ```bash
+   curl -X POST http://localhost:8080/margin/deposit-native \
+     -H 'content-type: application/json' \
+     -d '{ "wallet":"<PUBKEY>", "amount":0.5, "market":"SOL" }'
+   ```

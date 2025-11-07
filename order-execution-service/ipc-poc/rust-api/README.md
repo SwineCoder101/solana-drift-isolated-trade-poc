@@ -27,6 +27,7 @@ The API listens on `0.0.0.0:8080`.
 ## Endpoints
 
 - `GET /positions?wallet=<PUBKEY>`
+- `GET /positions/details?wallet=<PUBKEY>`
 - `GET /trade-history?wallet=<PUBKEY>`
 - `GET /markets/<symbol>`
 - `GET /positions/isolated-balance?wallet=<PUBKEY>&market=<SYMBOL>`
@@ -34,5 +35,6 @@ The API listens on `0.0.0.0:8080`.
 - `POST /orders/open-isolated`
 - `POST /orders/close`
 - `POST /margin/transfer`
+- `POST /margin/deposit-native`
 
 All mutation endpoints accept/return JSON exactly as forwarded to/from the TypeScript worker.

@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  order-execution-service:
+    build:
+      context: ./order-execution-service
+      dockerfile: Dockerfile
+    environment:
+      RPC_URL: ${RPC_URL:-https://api.devnet.solana.com}
+      SERVER_PRIVATE_KEY: ${SERVER_PRIVATE_KEY:-}
+      TS_NODE_PATH: /usr/bin/node
+      TS_WORKER_PATH: ../ts-worker/dist/index.js
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://order-execution-service:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - order-execution-service

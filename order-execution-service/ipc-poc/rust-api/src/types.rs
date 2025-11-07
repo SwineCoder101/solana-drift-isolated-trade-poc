@@ -30,6 +30,13 @@ pub struct IsolatedBalanceQuery {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct DepositNativeRequest {
+	pub wallet: String,
+	pub amount: f64,
+	pub market: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct WalletQuery {
 	pub wallet: String,
 }

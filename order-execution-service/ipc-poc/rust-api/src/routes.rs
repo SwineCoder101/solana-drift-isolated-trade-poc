@@ -13,7 +13,7 @@ use tracing::info;
 use crate::{
 	ipc::{IpcError, TsIpc},
 	types::{
-		ApiErrorBody, ClosePositionRequest, IsolatedBalanceQuery,
+		ApiErrorBody, ClosePositionRequest, DepositNativeRequest, IsolatedBalanceQuery,
 		OpenIsolatedRequest, TransferMarginRequest, WalletQuery,
 	},
 };
@@ -26,6 +26,7 @@ pub struct AppState {
 pub fn router(state: AppState) -> Router {
 	Router::new()
 		.route("/positions", get(get_positions))
+		.route("/positions/details", get(get_position_details))
 		.route("/trade-history", get(get_trades))
 		.route("/markets/:symbol", get(get_market))
 		.route(
@@ -36,6 +37,7 @@ pub fn router(state: AppState) -> Router {
 		.route("/orders/open-isolated", post(open_isolated))
 		.route("/orders/close", post(close_position))
 		.route("/margin/transfer", post(transfer_margin))
+		.route("/margin/deposit-native", post(deposit_native))
 		.with_state(state)
 }
 
@@ -182,6 +184,30 @@ async fn transfer_margin(
 		.map_err(map_ipc_error)
 }
 
+async fn deposit_native(
+	State(state): State<AppState>,
+	Json(body): Json<DepositNativeRequest>,
+) -> Result<Json<Value>, ApiError> {
+	validate_wallet(&body.wallet)?;
+	if !body.amount.is_finite() || body.amount <= 0.0 {
+		return Err(ApiError::new(
+			StatusCode::BAD_REQUEST,
+			"amount must be positive",
+		));
+	}
+	let args = json!({
+		"wallet": body.wallet,
+		"amount": body.amount,
+		"market": body.market,
+	});
+	state
+		.ipc
+		.call("depositNativeSol", args, Duration::from_secs(10))
+		.await
+		.map(Json)
+		.map_err(map_ipc_error)
+}
+
 async fn get_positions(
 	State(state): State<AppState>,
 	Query(query): Query<WalletQuery>,
@@ -191,6 +217,20 @@ async fn get_positions(
 	state
 		.ipc
 		.call("getPositions", args, Duration::from_secs(5))
+		.await
+		.map(Json)
+		.map_err(map_ipc_error)
+}
+
+async fn get_position_details(
+	State(state): State<AppState>,
+	Query(query): Query<WalletQuery>,
+) -> Result<Json<Value>, ApiError> {
+	validate_wallet(&query.wallet)?;
+	let args = json!({ "wallet": query.wallet });
+	state
+		.ipc
+		.call("getPositionDetails", args, Duration::from_secs(5))
 		.await
 		.map(Json)
 		.map_err(map_ipc_error)
@@ -226,7 +266,7 @@ async fn get_market(
 async fn get_isolated_balance(
 	State(state): State<AppState>,
 	Query(query): Query<IsolatedBalanceQuery>,
-) -> Result<Json<Value>, ApiError> {
+	) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
 	let args = json!({
 		"wallet": query.wallet,

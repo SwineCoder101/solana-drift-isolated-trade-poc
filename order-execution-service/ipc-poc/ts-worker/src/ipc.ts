@@ -7,6 +7,7 @@ import {
 	WalletOnlySchema,
 	MarketQuerySchema,
 	IsolatedBalanceSchema,
+	DepositNativeReqSchema,
 	EmptyArgsSchema,
 	RequestValidators,
 	IpcRequestSchema,
@@ -23,6 +24,8 @@ import {
 	getMarket,
 	getIsolatedBalance,
 	getServerPublicKey,
+	getPositionDetails,
+	buildDepositNativeSolTx,
 } from './drift.js';
 
 type HandlerMap = {
@@ -61,6 +64,14 @@ const handlers: HandlerMap = {
 	getServerPublicKey: async (args) => {
 		EmptyArgsSchema.parse(args);
 		return { publicKey: getServerPublicKey() };
+	},
+	getPositionDetails: async (args) => {
+		const parsed = WalletOnlySchema.parse(args);
+		return getPositionDetails(parsed);
+	},
+	depositNativeSol: async (args) => {
+		const parsed = DepositNativeReqSchema.parse(args);
+		return buildDepositNativeSolTx(parsed);
 	},
 };
 

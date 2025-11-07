@@ -1,0 +1,8 @@
+node_modules
+ipc-poc/ts-worker/dist
+ipc-poc/rust-api/target
+.git
+.gitignore
+.env
+scripts/patch-rpc-websockets.mjs#*#
+**/*.local
