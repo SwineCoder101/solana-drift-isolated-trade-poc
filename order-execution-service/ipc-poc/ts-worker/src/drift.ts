@@ -49,6 +49,7 @@ import {
 	TransferMarginReq,
 	WalletOnlyReq,
 	DepositNativeReq,
+	DepositTokenReq,
 } from './types.js';
 
 
@@ -146,6 +147,16 @@ function normaliseMarketKey(value: string): string {
 	return value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '_');
 }
 
+function logInstruction(label: string, wallet: PublicKey, mint: PublicKey) {
+	console.error(
+		JSON.stringify({
+			label,
+			wallet: wallet.toBase58(),
+			mint: mint.toBase58(),
+		})
+	);
+}
+
 function createCloseAccountIx(
 	account: PublicKey,
 	destination: PublicKey,
@@ -207,6 +218,18 @@ function buildSpotMarketMaps(): SpotMarketMaps {
 		}
 	}
 	return { bySymbol, byIndex };
+}
+
+function toTokenAmount(amount: number, decimals: number): BN {
+	const factor = Math.pow(10, decimals);
+	return new BN(Math.round(amount * factor));
+}
+
+function deriveAta(owner: PublicKey, mint: PublicKey, tokenProgram: PublicKey): PublicKey {
+	return PublicKey.findProgramAddressSync(
+		[owner.toBuffer(), tokenProgram.toBuffer(), mint.toBuffer()],
+		ASSOCIATED_TOKEN_PROGRAM_ID
+	)[0];
 }
 
 function resolveMarketConfig(requested: string): PerpMarketConfig {
@@ -426,6 +449,11 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 			writableSpotMarketIndexes: [spotMarketIndex],
 			readablePerpMarketIndex: marketConfig.marketIndex,
 		});
+		logInstruction(
+			'depositIntoIsolatedPerpPosition',
+			walletPk,
+			spotMarket.mint
+		);
 
 		return driftClient.program.instruction.depositIntoIsolatedPerpPosition(
 			spotMarketIndex,
@@ -741,7 +769,10 @@ export async function buildDepositNativeSolTx(req: DepositNativeReq) {
 		instructions.push(...wrap.ixs);
 	}
 
+	
 	const depositIx = await withAuthority(walletPk, async () => {
+		console.log('>>> user account: ', userAccount);
+		logInstruction('depositNativeSol', walletPk, spotMarket.mint);
 		return driftClient.getDepositInstruction(
 			lamports,
 			spotConfig.marketIndex,
@@ -850,4 +881,52 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 				liquidationPrice,
 			};
 		});
+}
+
+export async function buildDepositTokenTx(req: DepositTokenReq) {
+	const walletPk = new PublicKey(req.wallet);
+	const spotConfig = resolveSpotMarketConfig(req.market ?? 'USDC');
+	const spotMarket = driftClient.getSpotMarketAccount(spotConfig.marketIndex) as SpotMarketAccount;
+	const decimals = Number(spotMarket.decimals ?? 6);
+	const amount = toTokenAmount(req.amount, decimals);
+	if (amount.lte(ZERO)) {
+		throw new Error('amount too small');
+	}
+
+	const initIxs = await ensureUserInitIxs(walletPk);
+	const userAccount = await fetchUserAccount(walletPk);
+	const userInitialized = !!userAccount;
+
+	const tokenProgram = driftClient.getTokenProgramForSpotMarket(spotMarket);
+	const associatedAccount = deriveAta(walletPk, spotMarket.mint, tokenProgram);
+
+	const instructions: TransactionInstruction[] = [...initIxs];
+	const accountInfo = await connection.getAccountInfo(associatedAccount);
+	if (!accountInfo) {
+		instructions.push(
+			driftClient.createAssociatedTokenAccountIdempotentInstruction(
+				associatedAccount,
+				walletPk,
+				walletPk,
+				spotMarket.mint,
+				tokenProgram
+			)
+		);
+	}
+
+	const depositIx = await withAuthority(walletPk, async () => {
+		logInstruction('depositToken', walletPk, spotMarket.mint);
+		return driftClient.getDepositInstruction(
+			amount,
+			spotConfig.marketIndex,
+			associatedAccount,
+			undefined,
+			false,
+			userInitialized
+		);
+	});
+	instructions.push(depositIx);
+
+	const { txBase64, signatures } = await buildTransaction(walletPk, instructions);
+	return { txBase64, signatures };
 }

@@ -1,4 +1,5 @@
 mod ipc;
+mod executor;
 mod routes;
 mod types;
 
@@ -21,8 +22,10 @@ async fn main() -> anyhow::Result<()> {
 	let ipc = ipc::TsIpc::connect()
 		.await
 		.map_err(|err| anyhow::anyhow!("failed to spawn worker: {err}"))?;
+	let executor = executor::TxExecutor::from_env()
+		.map_err(|err| anyhow::anyhow!("executor init failed: {err}"))?;
 
-	let state = AppState { ipc };
+	let state = AppState { ipc, executor: std::sync::Arc::new(executor) };
 
 	let app: Router = router(state).layer(
 		ServiceBuilder::new()

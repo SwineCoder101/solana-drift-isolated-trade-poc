@@ -50,3 +50,9 @@ The Rust API listens on `http://0.0.0.0:8080` and launches the worker automatica
      -H 'content-type: application/json' \
      -d '{ "wallet":"<PUBKEY>", "amount":0.5, "market":"SOL" }'
    ```
+8. Deposit USDC (or another token) into the account:
+   ```bash
+   curl -X POST http://localhost:8080/margin/deposit-token \
+     -H 'content-type: application/json' \
+     -d '{ "wallet":"<PUBKEY>", "amount":25, "market":"USDC" }'
+   ```

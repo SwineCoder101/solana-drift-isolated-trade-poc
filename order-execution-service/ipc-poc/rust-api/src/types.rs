@@ -37,6 +37,13 @@ pub struct DepositNativeRequest {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct DepositTokenRequest {
+	pub wallet: String,
+	pub amount: f64,
+	pub market: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct WalletQuery {
 	pub wallet: String,
 }

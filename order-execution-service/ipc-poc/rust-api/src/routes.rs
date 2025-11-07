@@ -13,14 +13,16 @@ use tracing::info;
 use crate::{
 	ipc::{IpcError, TsIpc},
 	types::{
-		ApiErrorBody, ClosePositionRequest, DepositNativeRequest, IsolatedBalanceQuery,
+		ApiErrorBody, ClosePositionRequest, DepositNativeRequest, DepositTokenRequest, IsolatedBalanceQuery,
 		OpenIsolatedRequest, TransferMarginRequest, WalletQuery,
 	},
+	executor::ExecutorError,
 };
 
 #[derive(Clone)]
 pub struct AppState {
 	pub ipc: TsIpc,
+	pub executor: std::sync::Arc<crate::executor::TxExecutor>,
 }
 
 pub fn router(state: AppState) -> Router {
@@ -35,9 +37,27 @@ pub fn router(state: AppState) -> Router {
 		)
 		.route("/server/public-key", get(get_server_public_key))
 		.route("/orders/open-isolated", post(open_isolated))
+		.route(
+			"/orders/open-isolated/execute",
+			post(open_isolated_execute),
+		)
 		.route("/orders/close", post(close_position))
+		.route("/orders/close/execute", post(close_position_execute))
 		.route("/margin/transfer", post(transfer_margin))
+		.route(
+			"/margin/transfer/execute",
+			post(transfer_margin_execute),
+		)
 		.route("/margin/deposit-native", post(deposit_native))
+		.route(
+			"/margin/deposit-native/execute",
+			post(deposit_native_execute),
+		)
+		.route("/margin/deposit-token", post(deposit_token))
+		.route(
+			"/margin/deposit-token/execute",
+			post(deposit_token_execute),
+		)
 		.with_state(state)
 }
 
@@ -95,10 +115,97 @@ fn ensure_positive(name: &str, value: f64) -> Result<(), ApiError> {
 	Ok(())
 }
 
+const WORKER_TIMEOUT: Duration = Duration::from_secs(10);
+
 async fn open_isolated(
 	State(state): State<AppState>,
 	Json(body): Json<OpenIsolatedRequest>,
 ) -> Result<Json<Value>, ApiError> {
+	let value = open_isolated_build(&state, &body).await?;
+	Ok(Json(value))
+}
+
+async fn open_isolated_execute(
+	State(state): State<AppState>,
+	Json(body): Json<OpenIsolatedRequest>,
+) -> Result<Json<Value>, ApiError> {
+	let value = open_isolated_build(&state, &body).await?;
+	let executed = execute_transaction(&state, value).await?;
+	Ok(Json(executed))
+}
+
+async fn close_position(
+	State(state): State<AppState>,
+	Json(body): Json<ClosePositionRequest>,
+) -> Result<Json<Value>, ApiError> {
+	let value = close_position_build(&state, &body).await?;
+	Ok(Json(value))
+}
+
+async fn close_position_execute(
+	State(state): State<AppState>,
+	Json(body): Json<ClosePositionRequest>,
+) -> Result<Json<Value>, ApiError> {
+	let value = close_position_build(&state, &body).await?;
+	let executed = execute_transaction(&state, value).await?;
+	Ok(Json(executed))
+}
+
+async fn transfer_margin(
+	State(state): State<AppState>,
+	Json(body): Json<TransferMarginRequest>,
+) -> Result<Json<Value>, ApiError> {
+	let value = transfer_margin_build(&state, &body).await?;
+	Ok(Json(value))
+}
+
+async fn transfer_margin_execute(
+	State(state): State<AppState>,
+	Json(body): Json<TransferMarginRequest>,
+) -> Result<Json<Value>, ApiError> {
+	let value = transfer_margin_build(&state, &body).await?;
+	let executed = execute_transaction(&state, value).await?;
+	Ok(Json(executed))
+}
+
+async fn deposit_native(
+	State(state): State<AppState>,
+	Json(body): Json<DepositNativeRequest>,
+) -> Result<Json<Value>, ApiError> {
+	let value = deposit_native_build(&state, &body).await?;
+	Ok(Json(value))
+}
+
+async fn deposit_native_execute(
+	State(state): State<AppState>,
+	Json(body): Json<DepositNativeRequest>,
+) -> Result<Json<Value>, ApiError> {
+	let value = deposit_native_build(&state, &body).await?;
+	let executed = execute_transaction(&state, value).await?;
+	Ok(Json(executed))
+}
+
+async fn deposit_token(
+	State(state): State<AppState>,
+	Json(body): Json<DepositTokenRequest>,
+) -> Result<Json<Value>, ApiError> {
+	let value = deposit_token_build(&state, &body).await?;
+	Ok(Json(value))
+}
+
+async fn deposit_token_execute(
+	State(state): State<AppState>,
+	Json(body): Json<DepositTokenRequest>,
+) -> Result<Json<Value>, ApiError> {
+	let value = deposit_token_build(&state, &body).await?;
+	let executed = execute_transaction(&state, value).await?;
+	Ok(Json(executed))
+}
+
+async fn open_isolated_build(
+	state: &AppState,
+	body: &OpenIsolatedRequest,
+) -> Result<Value, ApiError> {
 	validate_wallet(&body.wallet)?;
 	ensure_positive("margin", body.margin)?;
 	if !body.size.is_finite() || body.size == 0.0 {
@@ -122,18 +229,13 @@ async fn open_isolated(
 		"margin": body.margin,
 	});
 	info!("open isolated request -> {}", body.market);
-	state
-		.ipc
-		.call("openIsolated", args, Duration::from_secs(10))
-		.await
-		.map(Json)
-		.map_err(map_ipc_error)
+	call_worker(state, "openIsolated", args, WORKER_TIMEOUT).await
 }
 
-async fn close_position(
-	State(state): State<AppState>,
-	Json(body): Json<ClosePositionRequest>,
-) -> Result<Json<Value>, ApiError> {
+async fn close_position_build(
+	state: &AppState,
+	body: &ClosePositionRequest,
+) -> Result<Value, ApiError> {
 	validate_wallet(&body.wallet)?;
 	if let Some(size) = body.size {
 		if !size.is_finite() || size <= 0.0 {
@@ -149,19 +251,13 @@ async fn close_position(
 		"market": body.market,
 		"size": body.size,
 	});
-
-	state
-		.ipc
-		.call("closePosition", args, Duration::from_secs(10))
-		.await
-		.map(Json)
-		.map_err(map_ipc_error)
+	call_worker(state, "closePosition", args, WORKER_TIMEOUT).await
 }
 
-async fn transfer_margin(
-	State(state): State<AppState>,
-	Json(body): Json<TransferMarginRequest>,
-) -> Result<Json<Value>, ApiError> {
+async fn transfer_margin_build(
+	state: &AppState,
+	body: &TransferMarginRequest,
+) -> Result<Value, ApiError> {
 	validate_wallet(&body.wallet)?;
 	if !body.delta.is_finite() || body.delta == 0.0 {
 		return Err(ApiError::new(
@@ -175,19 +271,13 @@ async fn transfer_margin(
 		"market": body.market,
 		"delta": body.delta,
 	});
-
-	state
-		.ipc
-		.call("transferMargin", args, Duration::from_secs(10))
-		.await
-		.map(Json)
-		.map_err(map_ipc_error)
+	call_worker(state, "transferMargin", args, WORKER_TIMEOUT).await
 }
 
-async fn deposit_native(
-	State(state): State<AppState>,
-	Json(body): Json<DepositNativeRequest>,
-) -> Result<Json<Value>, ApiError> {
+async fn deposit_native_build(
+	state: &AppState,
+	body: &DepositNativeRequest,
+) -> Result<Value, ApiError> {
 	validate_wallet(&body.wallet)?;
 	if !body.amount.is_finite() || body.amount <= 0.0 {
 		return Err(ApiError::new(
@@ -200,12 +290,26 @@ async fn deposit_native(
 		"amount": body.amount,
 		"market": body.market,
 	});
-	state
-		.ipc
-		.call("depositNativeSol", args, Duration::from_secs(10))
-		.await
-		.map(Json)
-		.map_err(map_ipc_error)
+	call_worker(state, "depositNativeSol", args, WORKER_TIMEOUT).await
+}
+
+async fn deposit_token_build(
+	state: &AppState,
+	body: &DepositTokenRequest,
+) -> Result<Value, ApiError> {
+	validate_wallet(&body.wallet)?;
+	if !body.amount.is_finite() || body.amount <= 0.0 {
+		return Err(ApiError::new(
+			StatusCode::BAD_REQUEST,
+			"amount must be positive",
+		));
+	}
+	let args = json!({
+		"wallet": body.wallet,
+		"amount": body.amount,
+		"market": body.market,
+	});
+	call_worker(state, "depositToken", args, WORKER_TIMEOUT).await
 }
 
 async fn get_positions(
@@ -266,7 +370,7 @@ async fn get_market(
 async fn get_isolated_balance(
 	State(state): State<AppState>,
 	Query(query): Query<IsolatedBalanceQuery>,
-	) -> Result<Json<Value>, ApiError> {
+) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
 	let args = json!({
 		"wallet": query.wallet,
@@ -290,4 +394,53 @@ async fn get_server_public_key(
 		.await
 		.map(Json)
 		.map_err(map_ipc_error)
+}
+
+async fn call_worker(
+	state: &AppState,
+	function: &str,
+	args: Value,
+	timeout: Duration,
+) -> Result<Value, ApiError> {
+	state
+		.ipc
+		.call(function, args, timeout)
+		.await
+		.map_err(map_ipc_error)
+}
+
+async fn execute_transaction(state: &AppState, mut value: Value) -> Result<Value, ApiError> {
+	let tx_base64 = value
+		.get("txBase64")
+		.and_then(|v| v.as_str())
+		.ok_or_else(|| {
+			ApiError::new(
+				StatusCode::INTERNAL_SERVER_ERROR,
+				"worker response missing txBase64",
+			)
+		})?;
+	let signature = state
+		.executor
+		.execute(tx_base64)
+		.await
+		.map_err(map_executor_error)?;
+	if let Some(obj) = value.as_object_mut() {
+		obj.insert("txSignature".into(), json!(signature.to_string()));
+	}
+	Ok(value)
+}
+
+fn map_executor_error(err: ExecutorError) -> ApiError {
+	match err {
+		ExecutorError::MissingKey => {
+			ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, "server missing signing key")
+		}
+		ExecutorError::InvalidKey(msg) => {
+			ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, format!("invalid signing key: {msg}"))
+		}
+		ExecutorError::Decode(msg) => {
+			ApiError::new(StatusCode::BAD_REQUEST, format!("invalid transaction: {msg}"))
+		}
+		ExecutorError::Rpc(msg) => ApiError::new(StatusCode::BAD_GATEWAY, msg),
+	}
 }

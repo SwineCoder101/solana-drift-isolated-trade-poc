@@ -17,3 +17,9 @@ tower-http = { version = "0.5", features = ["cors", "trace"] }
 uuid = { version = "1", features = ["v4"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+base64 = "0.22"
+bs58 = "0.5"
+solana-sdk = "1.18.23"
+solana-client = "1.18.23"
+
+bincode = "1"
