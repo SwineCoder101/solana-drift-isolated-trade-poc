@@ -71,6 +71,7 @@ export const FnNames = [
 	'getPositionDetails',
 	'depositNativeSol',
 	'depositToken',
+	'getBalances',
 ] as const;
 
 export type FnName = (typeof FnNames)[number];
@@ -87,6 +88,7 @@ export const RequestValidators: Record<FnName, z.ZodTypeAny> = {
 	getPositionDetails: WalletOnlySchema,
 	depositNativeSol: DepositNativeReqSchema,
 	depositToken: DepositTokenReqSchema,
+	getBalances: WalletOnlySchema,
 };
 
 export const FnEnum = z.enum(FnNames);

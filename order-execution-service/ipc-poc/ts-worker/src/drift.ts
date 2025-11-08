@@ -6,7 +6,12 @@ import {
 	TransactionInstruction,
 	VersionedTransaction,
 	type TransactionVersion,
+	ParsedAccountData,
 } from '@solana/web3.js';
+import {
+	ASSOCIATED_TOKEN_PROGRAM_ID as SPL_ASSOCIATED_TOKEN_PROGRAM_ID,
+	TOKEN_PROGRAM_ID as SPL_TOKEN_PROGRAM_ID,
+} from '@solana/spl-token';
 import {
 	BN,
 	DriftClient,
@@ -31,6 +36,7 @@ import {
 	ZERO,
 	convertToNumber,
 	WRAPPED_SOL_MINT,
+	isVariant,
 	type UserAccount,
 	type PerpMarketAccount,
 	type SpotMarketAccount,
@@ -55,12 +61,8 @@ import {
 
 type DriftTx = Transaction | VersionedTransaction;
 
-const TOKEN_PROGRAM_ID = new PublicKey(
-	'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-);
-const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
-	'ATokenGPvotn2u6zdtmovC9wGEPX1YVs4Y3t5u4K2Cw'
-);
+const TOKEN_PROGRAM_ID = SPL_TOKEN_PROGRAM_ID;
+const ASSOCIATED_TOKEN_PROGRAM_ID = SPL_ASSOCIATED_TOKEN_PROGRAM_ID;
 
 class ReadonlyWallet {
 	public readonly publicKey: PublicKey;
@@ -131,10 +133,23 @@ type MarketMaps = {
 type SpotMarketMaps = {
 	bySymbol: Map<string, SpotMarketConfig>;
 	byIndex: Map<number, SpotMarketConfig>;
+	byMint: Map<string, SpotMarketConfig>;
 };
 
 let marketMaps: MarketMaps | null = null;
 let spotMarketMaps: SpotMarketMaps | null = null;
+
+type TokenBalanceEntry = {
+	symbol: string;
+	mint: string;
+	balance: number;
+};
+
+type AccountBalanceSummary = {
+	address: string;
+	sol_balance: number;
+	tokens: TokenBalanceEntry[];
+};
 let initialized = false;
 
 function ensureInitialized() {
@@ -203,8 +218,10 @@ function buildSpotMarketMaps(): SpotMarketMaps {
 	const configs = SpotMarkets[envKey] ?? [];
 	const bySymbol = new Map<string, SpotMarketConfig>();
 	const byIndex = new Map<number, SpotMarketConfig>();
+	const byMint = new Map<string, SpotMarketConfig>();
 	for (const cfg of configs) {
 		byIndex.set(cfg.marketIndex, cfg);
+		byMint.set(cfg.mint.toBase58(), cfg);
 		const synonyms = new Set<string>([
 			cfg.symbol.toUpperCase(),
 			normaliseMarketKey(cfg.symbol),
@@ -215,7 +232,20 @@ function buildSpotMarketMaps(): SpotMarketMaps {
 			}
 		}
 	}
-	return { bySymbol, byIndex };
+	return { bySymbol, byIndex, byMint };
+}
+
+function ensureSpotMarkets() {
+	if (!spotMarketMaps) {
+		spotMarketMaps = buildSpotMarketMaps();
+	}
+}
+
+function getSpotSymbolByMint(mint: PublicKey): string {
+	ensureSpotMarkets();
+	const mintKey = mint.toBase58();
+	const cfg = spotMarketMaps?.byMint.get(mintKey);
+	return cfg?.symbol ?? mintKey.slice(0, 6);
 }
 
 function toTokenAmount(amount: number, decimals: number): BN {
@@ -322,6 +352,73 @@ function findAssociatedTokenAddress(owner: PublicKey, mint: PublicKey): PublicKe
 		ASSOCIATED_TOKEN_PROGRAM_ID
 	);
 	return ata;
+}
+
+async function fetchTokenBalancesForOwner(owner: PublicKey): Promise<TokenBalanceEntry[]> {
+	const programIds = [TOKEN_PROGRAM_ID];
+	const aggregates = new Map<string, { balance: number; symbol: string }>();
+
+	for (const programId of programIds) {
+		try {
+			const response = await connection.getParsedTokenAccountsByOwner(owner, { programId });
+			for (const { account } of response.value) {
+				const parsed = account.data as ParsedAccountData;
+				const info = (parsed?.parsed as any)?.info;
+				const tokenAmount = info?.tokenAmount;
+				const uiAmount = Number(tokenAmount?.uiAmount ?? tokenAmount?.uiAmountString ?? 0);
+				if (!uiAmount) continue;
+				const mint = info?.mint as string;
+				const symbol = getSpotSymbolByMint(new PublicKey(mint));
+				const current = aggregates.get(mint) ?? { balance: 0, symbol };
+				current.balance += uiAmount;
+				aggregates.set(mint, current);
+			}
+		} catch (err) {
+			console.warn('token balance fetch failed', err);
+		}
+	}
+
+	return Array.from(aggregates.entries()).map(([mint, data]) => ({
+		mint,
+		symbol: data.symbol,
+		balance: data.balance,
+	}));
+}
+
+function getDriftTokenBalancesFromUser(user: User, userAccount: UserAccount): TokenBalanceEntry[] {
+	const aggregates = new Map<string, { balance: number; symbol: string }>();
+	for (const spotPosition of userAccount.spotPositions) {
+		if (!spotPosition || spotPosition.scaledBalance.eq(ZERO)) continue;
+		const tokenAmount = user.getTokenAmount(spotPosition.marketIndex);
+		if (tokenAmount.eq(ZERO)) continue;
+		const spotMarket = driftClient.getSpotMarketAccount(spotPosition.marketIndex) as SpotMarketAccount;
+		const decimals = Number(spotMarket.decimals ?? 6);
+		const precision = new BN(10).pow(new BN(decimals));
+		const amount = convertToNumber(tokenAmount, precision);
+		if (!amount) continue;
+		const mint = spotMarket.mint.toBase58();
+		const symbol = getSpotSymbolByMint(spotMarket.mint);
+		const current = aggregates.get(mint) ?? { balance: 0, symbol };
+		current.balance += amount;
+		aggregates.set(mint, current);
+	}
+	return Array.from(aggregates.entries())
+		.filter(([, data]) => Math.abs(data.balance) > 0)
+		.map(([mint, data]) => ({
+			mint,
+			symbol: data.symbol,
+			balance: data.balance,
+		}));
+}
+
+async function buildAccountSummary(owner: PublicKey): Promise<AccountBalanceSummary> {
+	const lamports = await connection.getBalance(owner, 'confirmed').catch(() => 0);
+	const tokens = await fetchTokenBalancesForOwner(owner);
+	return {
+		address: owner.toBase58(),
+		sol_balance: lamports / LAMPORTS_PER_SOL,
+		tokens,
+	};
 }
 
 async function ensureUserInitIxs(
@@ -837,20 +934,7 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 
 	let userHelper: User | null = null;
 	try {
-		const subscriber = new OneShotUserAccountSubscriber(
-			driftClient.program,
-			walletPk,
-			userAccount
-		);
-		userHelper = new User({
-			driftClient,
-			userAccountPublicKey: walletPk,
-			accountSubscription: {
-				type: 'custom',
-				userAccountSubscriber: subscriber,
-			},
-		});
-		userHelper.isSubscribed = true;
+		userHelper = instantiateUserHelper(walletPk, userAccount);
 	} catch (err) {
 		console.warn('position details: unable to init user helper', err);
 	}
@@ -967,4 +1051,63 @@ export async function buildDepositTokenTx(req: DepositTokenReq) {
 
 	const { txBase64, signatures } = await buildTransaction(walletPk, instructions);
 	return { txBase64, signatures };
+}
+
+export async function getBalances(req: WalletOnlyReq) {
+	const walletPk = new PublicKey(req.wallet);
+	const walletSummary = await buildAccountSummary(walletPk);
+
+	let driftAccountSummary: AccountBalanceSummary = {
+		address: 'not-initialized',
+		sol_balance: 0,
+		tokens: [],
+	};
+
+	try {
+		const userPk = getUserAccountPublicKeySync(
+			driftClient.program.programId,
+			walletPk,
+			0
+		);
+		const userAccount = await fetchUserAccount(walletPk);
+		if (userAccount) {
+			const lamports = await connection.getBalance(userPk, 'confirmed').catch(() => 0);
+			const helper = instantiateUserHelper(walletPk, userAccount);
+			driftAccountSummary = {
+				address: userPk.toBase58(),
+				sol_balance: lamports / LAMPORTS_PER_SOL,
+				tokens: getDriftTokenBalancesFromUser(helper, userAccount),
+			};
+		} else {
+			driftAccountSummary = {
+				address: userPk.toBase58(),
+				sol_balance: 0,
+				tokens: [],
+			};
+		}
+	} catch (err) {
+		console.warn('fetch drift user balances failed', err);
+	}
+
+	return {
+		wallet: walletSummary,
+		drift_account: driftAccountSummary,
+	};
+}
+function instantiateUserHelper(walletPk: PublicKey, userAccount: UserAccount): User {
+	const subscriber = new OneShotUserAccountSubscriber(
+		driftClient.program,
+		walletPk,
+		userAccount
+	);
+	const user = new User({
+		driftClient,
+		userAccountPublicKey: walletPk,
+		accountSubscription: {
+			type: 'custom',
+			userAccountSubscriber: subscriber,
+		},
+	});
+	user.isSubscribed = true;
+	return user;
 }

@@ -28,6 +28,7 @@ The API listens on `0.0.0.0:8080`.
 
 - `GET /positions?wallet=<PUBKEY>`
 - `GET /positions/details?wallet=<PUBKEY>`
+- `GET /balances?wallet=<PUBKEY>`
 - `GET /trade-history?wallet=<PUBKEY>`
 - `GET /markets/<symbol>`
 - `GET /positions/isolated-balance?wallet=<PUBKEY>&market=<SYMBOL>`

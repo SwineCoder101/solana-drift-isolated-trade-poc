@@ -27,7 +27,8 @@ import {
 	getServerPublicKey,
 	getPositionDetails,
 	buildDepositNativeSolTx,
- 	buildDepositTokenTx,
+	buildDepositTokenTx,
+	getBalances,
 } from './drift.js';
 
 type HandlerMap = {
@@ -78,6 +79,10 @@ const handlers: HandlerMap = {
 	depositToken: async (args) => {
 		const parsed = DepositTokenReqSchema.parse(args);
 		return buildDepositTokenTx(parsed);
+	},
+	getBalances: async (args) => {
+		const parsed = WalletOnlySchema.parse(args);
+		return getBalances(parsed);
 	},
 };
 

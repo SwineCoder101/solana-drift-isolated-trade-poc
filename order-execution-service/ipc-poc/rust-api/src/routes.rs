@@ -28,6 +28,7 @@ pub struct AppState {
 pub fn router(state: AppState) -> Router {
 	Router::new()
 		.route("/positions", get(get_positions))
+		.route("/balances", get(get_balances))
 		.route("/positions/details", get(get_position_details))
 		.route("/trade-history", get(get_trades))
 		.route("/markets/:symbol", get(get_market))
@@ -335,6 +336,20 @@ async fn get_position_details(
 	state
 		.ipc
 		.call("getPositionDetails", args, Duration::from_secs(5))
+		.await
+		.map(Json)
+		.map_err(map_ipc_error)
+}
+
+async fn get_balances(
+	State(state): State<AppState>,
+	Query(query): Query<WalletQuery>,
+) -> Result<Json<Value>, ApiError> {
+	validate_wallet(&query.wallet)?;
+	let args = json!({ "wallet": query.wallet });
+	state
+		.ipc
+		.call("getBalances", args, Duration::from_secs(5))
 		.await
 		.map(Json)
 		.map_err(map_ipc_error)
