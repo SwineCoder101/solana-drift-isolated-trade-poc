@@ -429,7 +429,7 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 		0
 	);
 
-	const initIxs = await ensureUserInitIxs(walletPk);
+	const initIxs = await ensureUserInitIxs(walletPk) as TransactionInstruction[];
 	const userAccount = await fetchUserAccount(walletPk);
 	await ensureDriftUserCached(walletPk, userAccount);
 
@@ -451,13 +451,27 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 	console.log('walletPk: ', walletPk);
 	console.log('Mint: ', spotMarket.mint);
 	
-	const userTokenAccount = findAssociatedTokenAddress(
-		walletPk,
-		spotMarket.mint
+	const tokenProgram = driftClient.getTokenProgramForSpotMarket(spotMarket);
+	const userTokenAccount = await driftClient.getAssociatedTokenAccount(
+		spotMarketIndex,
+		false,
+		tokenProgram,
+		walletPk
 	);
 
 	console.log('userTokenAccount: ', userTokenAccount);
 
+	const userTokenAccountInfo = await connection.getAccountInfo(userTokenAccount);
+	const ensureTokenAccountIx =
+		userTokenAccountInfo === null
+			? driftClient.createAssociatedTokenAccountIdempotentInstruction(
+					userTokenAccount,
+					walletPk,
+					walletPk,
+					spotMarket.mint,
+					tokenProgram
+			  )
+			: null;
 
 	const depositIx = await withAuthority(walletPk, async () => {
 		const remainingAccounts = driftClient.getRemainingAccounts({
@@ -524,9 +538,10 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 	};
 
 	const { txBase64, signatures } = await buildTransaction(walletPk, [
-		...initIxs,
-		depositIx,
-		orderIx,
+		...((initIxs ?? []).filter((ix): ix is TransactionInstruction => typeof ix !== 'string')),
+		...(ensureTokenAccountIx && typeof ensureTokenAccountIx !== 'string' ? [ensureTokenAccountIx] : []),
+		...(typeof depositIx !== 'string' ? [depositIx] : []),
+		...(typeof orderIx !== 'string' ? [orderIx] : []),
 	]);
 
 	return { txBase64, signatures, meta };
