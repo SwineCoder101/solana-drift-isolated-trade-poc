@@ -1,11 +1,11 @@
 use std::time::Duration;
 
 use axum::{
-	extract::{Path, Query, State},
+	extract::{OriginalUri, Path, Query, State},
 	http::StatusCode,
 	response::{IntoResponse, Response},
 	routing::{get, post},
-	Json, Router,
+	Json, Router, extract::OriginalUri,
 };
 use serde_json::{json, Value};
 use tracing::info;
@@ -121,7 +121,10 @@ const WORKER_TIMEOUT: Duration = Duration::from_secs(10);
 async fn open_isolated(
 	State(state): State<AppState>,
 	Json(body): Json<OpenIsolatedRequest>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
+	log_request("/orders/open-isolated", &uri, Some(&body));
+	log_request("/orders/open-isolated/execute", &uri, Some(&body));
 	let value = open_isolated_build(&state, &body).await?;
 	Ok(Json(value))
 }
@@ -129,7 +132,10 @@ async fn open_isolated(
 async fn open_isolated_execute(
 	State(state): State<AppState>,
 	Json(body): Json<OpenIsolatedRequest>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
+	log_request("/orders/open-isolated", &uri, Some(&body));
+	log_request("/orders/open-isolated/execute", &uri, Some(&body));
 	let value = open_isolated_build(&state, &body).await?;
 	let executed = execute_transaction(&state, value).await?;
 	Ok(Json(executed))
@@ -138,7 +144,10 @@ async fn open_isolated_execute(
 async fn close_position(
 	State(state): State<AppState>,
 	Json(body): Json<ClosePositionRequest>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
+	log_request("/orders/close", &uri, Some(&body));
+	log_request("/orders/close/execute", &uri, Some(&body));
 	let value = close_position_build(&state, &body).await?;
 	Ok(Json(value))
 }
@@ -146,7 +155,9 @@ async fn close_position(
 async fn close_position_execute(
 	State(state): State<AppState>,
 	Json(body): Json<ClosePositionRequest>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
+	log_request("/orders/close", &uri, Some(&body));
 	let value = close_position_build(&state, &body).await?;
 	let executed = execute_transaction(&state, value).await?;
 	Ok(Json(executed))
@@ -155,7 +166,10 @@ async fn close_position_execute(
 async fn transfer_margin(
 	State(state): State<AppState>,
 	Json(body): Json<TransferMarginRequest>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
+	log_request("/margin/transfer", &uri, Some(&body));
+	log_request("/margin/transfer/execute", &uri, Some(&body));
 	let value = transfer_margin_build(&state, &body).await?;
 	Ok(Json(value))
 }
@@ -163,7 +177,9 @@ async fn transfer_margin(
 async fn transfer_margin_execute(
 	State(state): State<AppState>,
 	Json(body): Json<TransferMarginRequest>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
+	log_request("/margin/transfer", &uri, Some(&body));
 	let value = transfer_margin_build(&state, &body).await?;
 	let executed = execute_transaction(&state, value).await?;
 	Ok(Json(executed))
@@ -172,7 +188,10 @@ async fn transfer_margin_execute(
 async fn deposit_native(
 	State(state): State<AppState>,
 	Json(body): Json<DepositNativeRequest>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
+	log_request("/margin/deposit-native", &uri, Some(&body));
+	log_request("/margin/deposit-native/execute", &uri, Some(&body));
 	let value = deposit_native_build(&state, &body).await?;
 	Ok(Json(value))
 }
@@ -180,7 +199,9 @@ async fn deposit_native(
 async fn deposit_native_execute(
 	State(state): State<AppState>,
 	Json(body): Json<DepositNativeRequest>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
+	log_request("/margin/deposit-native", &uri, Some(&body));
 	let value = deposit_native_build(&state, &body).await?;
 	let executed = execute_transaction(&state, value).await?;
 	Ok(Json(executed))
@@ -189,7 +210,10 @@ async fn deposit_native_execute(
 async fn deposit_token(
 	State(state): State<AppState>,
 	Json(body): Json<DepositTokenRequest>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
+	log_request("/margin/deposit-token", &uri, Some(&body));
+	log_request("/margin/deposit-token/execute", &uri, Some(&body));
 	let value = deposit_token_build(&state, &body).await?;
 	Ok(Json(value))
 }
@@ -197,7 +221,9 @@ async fn deposit_token(
 async fn deposit_token_execute(
 	State(state): State<AppState>,
 	Json(body): Json<DepositTokenRequest>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
+	log_request("/margin/deposit-token", &uri, Some(&body));
 	let value = deposit_token_build(&state, &body).await?;
 	let executed = execute_transaction(&state, value).await?;
 	Ok(Json(executed))
@@ -316,8 +342,10 @@ async fn deposit_token_build(
 async fn get_positions(
 	State(state): State<AppState>,
 	Query(query): Query<WalletQuery>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
+	log_request("/positions", &uri, None);
 	let args = json!({ "wallet": query.wallet });
 	state
 		.ipc
@@ -330,8 +358,10 @@ async fn get_positions(
 async fn get_position_details(
 	State(state): State<AppState>,
 	Query(query): Query<WalletQuery>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
+	log_request("/positions", &uri, None);
 	let args = json!({ "wallet": query.wallet });
 	state
 		.ipc
@@ -344,8 +374,10 @@ async fn get_position_details(
 async fn get_balances(
 	State(state): State<AppState>,
 	Query(query): Query<WalletQuery>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
+	log_request("/positions", &uri, None);
 	let args = json!({ "wallet": query.wallet });
 	state
 		.ipc
@@ -358,8 +390,10 @@ async fn get_balances(
 async fn get_trades(
 	State(state): State<AppState>,
 	Query(query): Query<WalletQuery>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
+	log_request("/positions", &uri, None);
 	let args = json!({ "wallet": query.wallet });
 	state
 		.ipc
@@ -372,6 +406,7 @@ async fn get_trades(
 async fn get_market(
 	State(state): State<AppState>,
 	Path(symbol): Path<String>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	let args = json!({ "symbol": symbol });
 	state
@@ -385,8 +420,10 @@ async fn get_market(
 async fn get_isolated_balance(
 	State(state): State<AppState>,
 	Query(query): Query<IsolatedBalanceQuery>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
+	log_request("/positions", &uri, None);
 	let args = json!({
 		"wallet": query.wallet,
 		"market": query.market,
@@ -401,6 +438,7 @@ async fn get_isolated_balance(
 
 async fn get_server_public_key(
 	State(state): State<AppState>,
+	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	let args = json!({});
 	state
@@ -458,4 +496,11 @@ fn map_executor_error(err: ExecutorError) -> ApiError {
 		}
 		ExecutorError::Rpc(msg) => ApiError::new(StatusCode::BAD_GATEWAY, msg),
 	}
+}
+
+fn log_request(label: &str, uri: &OriginalUri, payload: Option<&impl serde::Serialize>) {
+	let body_json = payload
+		.and_then(|p| serde_json::to_string(p).ok())
+		.unwrap_or_else(|| "{}".to_string());
+	tracing::info!(url = %uri, event = label, payload = %body_json, "incoming request");
 }

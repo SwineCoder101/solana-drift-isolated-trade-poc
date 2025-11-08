@@ -1,6 +1,18 @@
 # solana-drift-isolated-trade-poc
 This is a poc for a drift isolated trade, ts nextjs + rust tokio.
 
+## Frontend Environment
+
+Create `frontend/.env.local` with:
+
+```
+NEXT_PUBLIC_ORDER_EXECUTION_URL=http://localhost:8080
+NEXT_PUBLIC_DRIFT_INDEXER_URL=http://localhost:4000
+DB_HOST=localhost
+```
+
+Then run the Next.js dev server from `frontend/`.
+
 ## Running with Docker
 
 Make sure Docker Desktop (or another engine) is running, then from the repo root:
