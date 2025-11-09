@@ -27,3 +27,13 @@ This spins up two services:
 - `frontend` – Next.js dev server on <http://localhost:3000> pointing at the API (`http://localhost:8080`)
 
 Environment variables such as `RPC_URL` or `SERVER_PRIVATE_KEY` can be provided via a root `.env` file or `docker compose` CLI overrides. Stop everything with `docker compose down`.
+
+## Indexing Service
+
+An `order-indexing-service/` workspace hosts:
+
+- `indexer-bin`: exposes `/health` for liveness checks.
+- `backfill-bin`: backfills `trade_history` table (Supabase/Postgres) for the admin wallet.
+- `history-bin`: HTTP API (`GET /history`) for frontend trade history (pagination coming later).
+
+Configuration lives in `order-indexing-service/.env` (see `.env.example`). After setting the env, run the desired bin with `cargo run -p backfill-bin`, `cargo run -p history-bin`, etc.

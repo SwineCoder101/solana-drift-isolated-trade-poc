@@ -1,0 +1,20 @@
+[package]
+name = "backfill-bin"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+sqlx.workspace = true
+hex.workspace = true
+solana-program.workspace = true
+solana-client.workspace = true
+url.workspace = true
+indexer-common = { path = "../indexer-common" }
+dotenvy.workspace = true
+chrono.workspace = true
