@@ -49,7 +49,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-width: 1080px;
+  max-width: 1280px;
   width: 100%;
   margin: 0 auto;
 }
@@ -61,15 +61,81 @@ button {
   gap: 1.5rem;
 }
 
+.card-row .card {
+  flex: 1;
+  min-width: 280px;
+  width: auto;
+}
+
+.status-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.positions-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.positions-card .status {
+  margin-top: 0;
+}
+
+.positions-card__table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.positions-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+  table-layout: fixed;
+}
+
+.positions-table th,
+.positions-table td {
+  text-align: left;
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.positions-table th {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #cbd5f5;
+}
+
+.positions-table td {
+  font-size: 0.95rem;
+}
+
+.positions-table td button + button {
+  margin-left: 0.4rem;
+}
+
 .card {
   background: rgba(15, 23, 42, 0.8);
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 1rem;
   padding: 2rem;
-  width: min(480px, 100%);
+  width: min(600px, 100%);
   margin: 0 auto;
   backdrop-filter: blur(12px);
   box-shadow: 0 16px 60px rgba(15, 23, 42, 0.3);
+}
+.card.positions-card,
+.card.order-card,
+.card.history-card,
+.card.balances-card {
+  width: 100%;
 }
 
 .card h2 {
@@ -118,6 +184,20 @@ button[type='submit']:hover:not(:disabled) {
   box-shadow: 0 12px 24px rgba(244, 63, 94, 0.2);
 }
 
+button.secondary {
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.5);
+  color: inherit;
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+}
+
+button.secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .status {
   margin-top: 1.25rem;
   font-size: 0.9rem;
@@ -136,6 +216,23 @@ button[type='submit']:hover:not(:disabled) {
   margin-bottom: 0.5rem;
   font-size: 1.35rem;
   letter-spacing: 0.02em;
+}
+
+.balances-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+}
+
+.balances-card__header button.secondary {
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.5);
+  color: inherit;
 }
 
 .balance-panel {

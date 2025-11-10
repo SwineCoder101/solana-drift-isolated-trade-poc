@@ -10,12 +10,15 @@ use routes::{router, AppState};
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use tracing::info;
+use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
  load_env();
+ let env_filter = EnvFilter::try_from_default_env()
+		.unwrap_or_else(|_| EnvFilter::new("info,tower_http=info"));
  tracing_subscriber::fmt()
-		.with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+		.with_env_filter(env_filter)
 		.with_target(false)
 		.init();
 

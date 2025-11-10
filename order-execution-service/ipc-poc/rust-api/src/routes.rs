@@ -7,8 +7,8 @@ use axum::{
 	routing::{get, post},
 	Json, Router,
 };
-use serde_json::{json, Value};
-use tracing::info;
+  use serde_json::{json, Value};
+  use tracing::info;
 
 use crate::{
 	ipc::{IpcError, TsIpc},
@@ -345,7 +345,7 @@ async fn get_positions(
 	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
-	log_request("/positions", &uri, None);
+  log_request("/positions", &uri, serialize_payload(&query));
 	let args = json!({ "wallet": query.wallet });
 	state
 		.ipc
@@ -361,7 +361,7 @@ async fn get_position_details(
 	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
-	log_request("/positions", &uri, None);
+  log_request("/positions/details", &uri, serialize_payload(&query));
 	let args = json!({ "wallet": query.wallet });
 	state
 		.ipc
@@ -377,7 +377,7 @@ async fn get_balances(
 	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
-	log_request("/positions", &uri, None);
+  log_request("/balances", &uri, serialize_payload(&query));
 	let args = json!({ "wallet": query.wallet });
 	state
 		.ipc
@@ -393,7 +393,7 @@ async fn get_trades(
 	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
-	log_request("/positions", &uri, None);
+  log_request("/trade-history", &uri, serialize_payload(&query));
 	let args = json!({ "wallet": query.wallet });
 	state
 		.ipc
@@ -423,7 +423,11 @@ async fn get_isolated_balance(
 	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
 	validate_wallet(&query.wallet)?;
-	log_request("/positions", &uri, None);
+  log_request(
+		"/positions/isolated-balance",
+		&uri,
+		serialize_payload(&query),
+	);
 	let args = json!({
 		"wallet": query.wallet,
 		"market": query.market,
@@ -440,7 +444,8 @@ async fn get_server_public_key(
 	State(state): State<AppState>,
 	OriginalUri(uri): OriginalUri,
 ) -> Result<Json<Value>, ApiError> {
-	let args = json!({});
+  log_request("/server/public-key", &uri, None);
+  let args = json!({});
 	state
 		.ipc
 		.call("getServerPublicKey", args, Duration::from_secs(5))
