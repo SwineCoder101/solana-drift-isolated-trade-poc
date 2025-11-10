@@ -55,6 +55,7 @@ function HomePage() {
   const [submitting, setSubmitting] = useState(false);
   const [balances, setBalances] = useState<BalancesResponse | null>(null);
   const [balanceStatus, setBalanceStatus] = useState<string | null>(null);
+  const [adminWallet, setAdminWallet] = useState<string | null>(null);
   const [positions, setPositions] = useState<PositionRow[]>([]);
   const [positionsStatus, setPositionsStatus] = useState<string | null>(null);
   const [tradeHistory, setTradeHistory] = useState<any[]>([]);
@@ -91,15 +92,33 @@ function HomePage() {
     return () => clearInterval(interval);
   }, [fetchServiceStatuses]);
 
+  const fetchAdminWallet = useCallback(async () => {
+    try {
+      const res = await fetch(`${ORDER_EXECUTION_URL}/server/public-key`);
+      if (!res.ok) {
+        throw new Error('Failed to load admin wallet');
+      }
+      const payload = await res.json().catch(() => null);
+      if (!payload || typeof payload.publicKey !== 'string') {
+        throw new Error('Invalid admin wallet response');
+      }
+      setAdminWallet(payload.publicKey);
+    } catch (err) {
+      console.error('Unable to fetch admin wallet', err);
+      setAdminWallet(null);
+      setBalanceStatus('Unable to load admin wallet.');
+    }
+  }, []);
+
   const fetchBalances = useCallback(async () => {
-    if (!publicKey) {
+    if (!adminWallet) {
       setBalances(null);
-      setBalanceStatus(null);
+      setBalanceStatus('Waiting for admin wallet...');
       return;
     }
     setBalanceStatus('Loading balances...');
     try {
-      const res = await fetch(`${ORDER_EXECUTION_URL}/balances?wallet=${publicKey.toBase58()}`);
+      const res = await fetch(`${ORDER_EXECUTION_URL}/balances?wallet=${adminWallet}`);
       if (!res.ok) {
         const payload = await res.json().catch(() => null);
         throw new Error(payload?.error ?? 'Failed to fetch balances');
@@ -112,13 +131,22 @@ function HomePage() {
       setBalanceStatus(message);
       setBalances(null);
     }
-  }, [publicKey]);
+  }, [adminWallet]);
 
   useEffect(() => {
+    if (!adminWallet) {
+      return;
+    }
     fetchBalances();
     const interval = setInterval(fetchBalances, 15000);
     return () => clearInterval(interval);
-  }, [fetchBalances]);
+  }, [fetchBalances, adminWallet]);
+
+  useEffect(() => {
+    fetchAdminWallet();
+    const interval = setInterval(fetchAdminWallet, 60000);
+    return () => clearInterval(interval);
+  }, [fetchAdminWallet]);
 
   const fetchPositions = useCallback(async () => {
     if (!publicKey) {
@@ -280,11 +308,12 @@ function HomePage() {
             </section>
             <section className="card balances-card">
               <h2>Wallet Balances</h2>
+              {adminWallet && <p>Admin wallet: {adminWallet}</p>}
               {balanceStatus && <p className="status">{balanceStatus}</p>}
-              {!balanceStatus && !balances && <p>Connect a wallet to view balances.</p>}
+              {!balanceStatus && !balances && <p>Unable to load admin wallet balances.</p>}
               {balances && (
                 <div className="balance-panels">
-                  <BalancePanel title="Wallet" summary={balances.wallet} />
+                  <BalancePanel title="Admin Wallet" summary={balances.wallet} />
                   <BalancePanel title="Drift Account" summary={balances.drift_account} />
                 </div>
               )}
