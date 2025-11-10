@@ -2,10 +2,10 @@ use std::time::Duration;
 
 use axum::{
 	extract::{OriginalUri, Path, Query, State},
-	http::StatusCode,
+	http::{StatusCode, Uri},
 	response::{IntoResponse, Response},
 	routing::{get, post},
-	Json, Router, extract::OriginalUri,
+	Json, Router,
 };
 use serde_json::{json, Value};
 use tracing::info;
@@ -120,22 +120,22 @@ const WORKER_TIMEOUT: Duration = Duration::from_secs(10);
 
 async fn open_isolated(
 	State(state): State<AppState>,
-	Json(body): Json<OpenIsolatedRequest>,
 	OriginalUri(uri): OriginalUri,
+	Json(body): Json<OpenIsolatedRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/orders/open-isolated", &uri, Some(&body));
-	log_request("/orders/open-isolated/execute", &uri, Some(&body));
+	log_request("/orders/open-isolated", &uri, serialize_payload(&body));
+	log_request("/orders/open-isolated/execute", &uri, serialize_payload(&body));
 	let value = open_isolated_build(&state, &body).await?;
 	Ok(Json(value))
 }
 
 async fn open_isolated_execute(
 	State(state): State<AppState>,
-	Json(body): Json<OpenIsolatedRequest>,
 	OriginalUri(uri): OriginalUri,
+	Json(body): Json<OpenIsolatedRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/orders/open-isolated", &uri, Some(&body));
-	log_request("/orders/open-isolated/execute", &uri, Some(&body));
+	log_request("/orders/open-isolated", &uri, serialize_payload(&body));
+	log_request("/orders/open-isolated/execute", &uri, serialize_payload(&body));
 	let value = open_isolated_build(&state, &body).await?;
 	let executed = execute_transaction(&state, value).await?;
 	Ok(Json(executed))
@@ -143,21 +143,21 @@ async fn open_isolated_execute(
 
 async fn close_position(
 	State(state): State<AppState>,
-	Json(body): Json<ClosePositionRequest>,
 	OriginalUri(uri): OriginalUri,
+	Json(body): Json<ClosePositionRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/orders/close", &uri, Some(&body));
-	log_request("/orders/close/execute", &uri, Some(&body));
+	log_request("/orders/close", &uri, serialize_payload(&body));
+	log_request("/orders/close/execute", &uri, serialize_payload(&body));
 	let value = close_position_build(&state, &body).await?;
 	Ok(Json(value))
 }
 
 async fn close_position_execute(
 	State(state): State<AppState>,
-	Json(body): Json<ClosePositionRequest>,
 	OriginalUri(uri): OriginalUri,
+	Json(body): Json<ClosePositionRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/orders/close", &uri, Some(&body));
+	log_request("/orders/close", &uri, serialize_payload(&body));
 	let value = close_position_build(&state, &body).await?;
 	let executed = execute_transaction(&state, value).await?;
 	Ok(Json(executed))
@@ -165,21 +165,21 @@ async fn close_position_execute(
 
 async fn transfer_margin(
 	State(state): State<AppState>,
-	Json(body): Json<TransferMarginRequest>,
 	OriginalUri(uri): OriginalUri,
+	Json(body): Json<TransferMarginRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/margin/transfer", &uri, Some(&body));
-	log_request("/margin/transfer/execute", &uri, Some(&body));
+	log_request("/margin/transfer", &uri, serialize_payload(&body));
+	log_request("/margin/transfer/execute", &uri, serialize_payload(&body));
 	let value = transfer_margin_build(&state, &body).await?;
 	Ok(Json(value))
 }
 
 async fn transfer_margin_execute(
 	State(state): State<AppState>,
-	Json(body): Json<TransferMarginRequest>,
 	OriginalUri(uri): OriginalUri,
+	Json(body): Json<TransferMarginRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/margin/transfer", &uri, Some(&body));
+	log_request("/margin/transfer", &uri, serialize_payload(&body));
 	let value = transfer_margin_build(&state, &body).await?;
 	let executed = execute_transaction(&state, value).await?;
 	Ok(Json(executed))
@@ -187,21 +187,21 @@ async fn transfer_margin_execute(
 
 async fn deposit_native(
 	State(state): State<AppState>,
-	Json(body): Json<DepositNativeRequest>,
 	OriginalUri(uri): OriginalUri,
+	Json(body): Json<DepositNativeRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/margin/deposit-native", &uri, Some(&body));
-	log_request("/margin/deposit-native/execute", &uri, Some(&body));
+	log_request("/margin/deposit-native", &uri, serialize_payload(&body));
+	log_request("/margin/deposit-native/execute", &uri, serialize_payload(&body));
 	let value = deposit_native_build(&state, &body).await?;
 	Ok(Json(value))
 }
 
 async fn deposit_native_execute(
 	State(state): State<AppState>,
-	Json(body): Json<DepositNativeRequest>,
 	OriginalUri(uri): OriginalUri,
+	Json(body): Json<DepositNativeRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/margin/deposit-native", &uri, Some(&body));
+	log_request("/margin/deposit-native", &uri, serialize_payload(&body));
 	let value = deposit_native_build(&state, &body).await?;
 	let executed = execute_transaction(&state, value).await?;
 	Ok(Json(executed))
@@ -209,21 +209,21 @@ async fn deposit_native_execute(
 
 async fn deposit_token(
 	State(state): State<AppState>,
-	Json(body): Json<DepositTokenRequest>,
 	OriginalUri(uri): OriginalUri,
+	Json(body): Json<DepositTokenRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/margin/deposit-token", &uri, Some(&body));
-	log_request("/margin/deposit-token/execute", &uri, Some(&body));
+	log_request("/margin/deposit-token", &uri, serialize_payload(&body));
+	log_request("/margin/deposit-token/execute", &uri, serialize_payload(&body));
 	let value = deposit_token_build(&state, &body).await?;
 	Ok(Json(value))
 }
 
 async fn deposit_token_execute(
 	State(state): State<AppState>,
-	Json(body): Json<DepositTokenRequest>,
 	OriginalUri(uri): OriginalUri,
+	Json(body): Json<DepositTokenRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/margin/deposit-token", &uri, Some(&body));
+	log_request("/margin/deposit-token", &uri, serialize_payload(&body));
 	let value = deposit_token_build(&state, &body).await?;
 	let executed = execute_transaction(&state, value).await?;
 	Ok(Json(executed))
@@ -498,9 +498,11 @@ fn map_executor_error(err: ExecutorError) -> ApiError {
 	}
 }
 
-fn log_request(label: &str, uri: &OriginalUri, payload: Option<&impl serde::Serialize>) {
-	let body_json = payload
-		.and_then(|p| serde_json::to_string(p).ok())
-		.unwrap_or_else(|| "{}".to_string());
+fn log_request(label: &str, uri: &Uri, payload: Option<String>) {
+	let body_json = payload.unwrap_or_else(|| "{}".to_string());
 	tracing::info!(url = %uri, event = label, payload = %body_json, "incoming request");
+}
+
+fn serialize_payload<T: serde::Serialize>(value: &T) -> Option<String> {
+	serde_json::to_string(value).ok()
 }

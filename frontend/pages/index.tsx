@@ -1,6 +1,6 @@
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 
 type OrderSide = 'long' | 'short';
@@ -40,7 +40,12 @@ const DRIFT_INDEXER_URL = process.env.NEXT_PUBLIC_DRIFT_INDEXER_URL ?? 'http://l
 
 const ASSETS = ['PERP_SOL', 'PERP_BTC', 'PERP_ETH'];
 
-export default function Home() {
+const WalletMultiButtonDynamic = dynamic(
+  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+  { ssr: false },
+);
+
+function HomePage() {
   const { publicKey } = useWallet();
   const [asset, setAsset] = useState<string>(ASSETS[0]);
   const [side, setSide] = useState<OrderSide>('long');
@@ -262,16 +267,29 @@ export default function Home() {
             <h1>Solana Drift Perp Trade</h1>
             <p>Connect your wallet and configure a perpetual order.</p>
           </div>
-          <WalletMultiButton className="wallet-button" />
+          <WalletMultiButtonDynamic className="wallet-button" />
         </header>
         <main className="content">
-          <section className="card status-card">
-            <h2>Services</h2>
-            <div className="status-grid">
-              <ServiceStatus label="Order Execution" status={executionStatus} />
-              <ServiceStatus label="Indexer" status={indexerStatus} />
-            </div>
-          </section>
+          <div className="card-row">
+            <section className="card status-card">
+              <h2>Services</h2>
+              <div className="status-grid">
+                <ServiceStatus label="Order Execution" status={executionStatus} />
+                <ServiceStatus label="Indexer" status={indexerStatus} />
+              </div>
+            </section>
+            <section className="card balances-card">
+              <h2>Wallet Balances</h2>
+              {balanceStatus && <p className="status">{balanceStatus}</p>}
+              {!balanceStatus && !balances && <p>Connect a wallet to view balances.</p>}
+              {balances && (
+                <div className="balance-panels">
+                  <BalancePanel title="Wallet" summary={balances.wallet} />
+                  <BalancePanel title="Drift Account" summary={balances.drift_account} />
+                </div>
+              )}
+            </section>
+          </div>
           <section className="card">
             <h2>Order Parameters (Admin Wallet)</h2>
             <form onSubmit={handleSubmit} className="form-grid">
@@ -326,15 +344,6 @@ export default function Home() {
               {status && <p>{status}</p>}
             </div>
           </section>
-
-          {balanceStatus && <p className="status">{balanceStatus}</p>}
-          {balances && (
-            <section className="card">
-              <h2>Balances</h2>
-              <BalancePanel title="Wallet" summary={balances.wallet} />
-              <BalancePanel title="Drift Account" summary={balances.drift_account} />
-            </section>
-          )}
 
           <section className="card">
             <h2>Live Position Monitoring</h2>
@@ -451,3 +460,5 @@ function BalancePanel({ title, summary }: { title: string; summary: AccountSumma
     </div>
   );
 }
+
+export default dynamic(() => Promise.resolve(HomePage), { ssr: false });
