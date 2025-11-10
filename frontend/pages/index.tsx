@@ -37,8 +37,17 @@ type ServiceStatus = 'up' | 'down' | 'checking';
 const ORDER_EXECUTION_URL =
   process.env.NEXT_PUBLIC_ORDER_EXECUTION_URL ?? process.env.NEXT_PUBLIC_EXECUTION_API ?? 'http://localhost:8080';
 const DRIFT_INDEXER_URL = process.env.NEXT_PUBLIC_DRIFT_INDEXER_URL ?? 'http://localhost:4000';
+const SERVICE_RETRY_LIMIT = 3;
+const SERVICE_RETRY_INTERVAL_MS = 15000;
 
 const ASSETS = ['PERP_SOL', 'PERP_BTC', 'PERP_ETH'];
+const EXPLORER_BASE = 'https://explorer.solana.com/address';
+
+const shortenAddress = (address: string) => {
+  if (!address) return '';
+  if (address.length <= 8) return address;
+  return `${address.slice(0, 3)}...${address.slice(-4)}`;
+};
 
 const WalletMultiButtonDynamic = dynamic(
   async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
@@ -61,6 +70,7 @@ function HomePage() {
   const [tradeHistory, setTradeHistory] = useState<any[]>([]);
   const [executionStatus, setExecutionStatus] = useState<ServiceStatus>('checking');
   const [indexerStatus, setIndexerStatus] = useState<ServiceStatus>('checking');
+  const [serviceRefreshPending, setServiceRefreshPending] = useState(false);
 
   const address = useMemo(() => publicKey?.toBase58() ?? 'Not connected', [publicKey]);
 
@@ -87,9 +97,40 @@ function HomePage() {
   }, []);
 
   useEffect(() => {
-    fetchServiceStatuses();
-    const interval = setInterval(fetchServiceStatuses, 15000);
-    return () => clearInterval(interval);
+    let attempts = 0;
+    let cancelled = false;
+    let interval: NodeJS.Timeout | null = null;
+
+    const runCheck = async () => {
+      if (cancelled || attempts >= SERVICE_RETRY_LIMIT) {
+        return;
+      }
+      await fetchServiceStatuses();
+      attempts += 1;
+      if (attempts >= SERVICE_RETRY_LIMIT && interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    };
+
+    runCheck();
+    interval = setInterval(runCheck, SERVICE_RETRY_INTERVAL_MS);
+
+    return () => {
+      cancelled = true;
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [fetchServiceStatuses]);
+
+  const handleServiceRefresh = useCallback(async () => {
+    setServiceRefreshPending(true);
+    try {
+      await fetchServiceStatuses();
+    } finally {
+      setServiceRefreshPending(false);
+    }
   }, [fetchServiceStatuses]);
 
   const fetchAdminWallet = useCallback(async () => {
@@ -116,7 +157,7 @@ function HomePage() {
       setBalanceStatus('Waiting for admin wallet...');
       return;
     }
-    setBalanceStatus('Loading balances...');
+    // setBalanceStatus('Loading balances...');
     try {
       const res = await fetch(`${ORDER_EXECUTION_URL}/balances?wallet=${adminWallet}`);
       if (!res.ok) {
@@ -301,14 +342,16 @@ function HomePage() {
           <div className="card-row">
             <section className="card status-card">
               <h2>Services</h2>
+              <button type="button" onClick={handleServiceRefresh} disabled={serviceRefreshPending} className="secondary">
+                {serviceRefreshPending ? 'Refreshing...' : 'Refresh'}
+              </button>
               <div className="status-grid">
                 <ServiceStatus label="Order Execution" status={executionStatus} />
                 <ServiceStatus label="Indexer" status={indexerStatus} />
               </div>
             </section>
             <section className="card balances-card">
-              <h2>Wallet Balances</h2>
-              {adminWallet && <p>Admin wallet: {adminWallet}</p>}
+              <h2>Account Balances</h2>
               {balanceStatus && <p className="status">{balanceStatus}</p>}
               {!balanceStatus && !balances && <p>Unable to load admin wallet balances.</p>}
               {balances && (
@@ -459,10 +502,10 @@ function BalancePanel({ title, summary }: { title: string; summary: AccountSumma
     <div className="balance-panel">
       <h3>{title}</h3>
       <p>
-        <strong>Address:</strong> {summary.address}
+        <strong>Address:</strong> <AddressLink address={summary.address} />
       </p>
       <p>
-        <strong>SOL:</strong> {summary.sol_balance.toFixed(6)}
+        <strong>SOL:</strong> {summary.sol_balance.toFixed(3)}
       </p>
       {summary.tokens.length > 0 ? (
         <table>
@@ -477,8 +520,10 @@ function BalancePanel({ title, summary }: { title: string; summary: AccountSumma
             {summary.tokens.map((token) => (
               <tr key={`${summary.address}-${token.mint}`}>
                 <td>{token.symbol}</td>
-                <td>{token.mint}</td>
-                <td>{token.balance.toFixed(6)}</td>
+                <td>
+                  <AddressLink address={token.mint} />
+                </td>
+                <td>{token.balance.toFixed(3)}</td>
               </tr>
             ))}
           </tbody>
@@ -487,6 +532,15 @@ function BalancePanel({ title, summary }: { title: string; summary: AccountSumma
         <p>No SPL token balances detected.</p>
       )}
     </div>
+  );
+}
+
+function AddressLink({ address }: { address: string }) {
+  const href = `${EXPLORER_BASE}/${address}?cluster=devnet`;
+  return (
+    <a href={href} target="_blank" rel="noreferrer" title={address}>
+      {shortenAddress(address)}
+    </a>
   );
 }
 
