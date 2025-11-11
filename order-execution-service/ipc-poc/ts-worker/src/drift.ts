@@ -705,32 +705,56 @@ export async function buildClosePositionTx(req: ClosePositionReq) {
 		(pos) => pos.marketIndex === marketConfig.marketIndex
 	);
 
-	if (!position || position.baseAssetAmount.eq(new BN(0))) {
+	await ensureDriftUserCached(walletPk, userAccount);
+
+	// Check if there's isolated margin to withdraw
+	const isolatedMarginAmount = await withAuthority(walletPk, async () => {
+		return driftClient.getIsolatedPerpPositionTokenAmount(
+			marketConfig.marketIndex
+		) ?? ZERO;
+	});
+
+	const hasIsolatedMargin = isolatedMarginAmount.gt(ZERO);
+	const hasOpenPosition = position && !position.baseAssetAmount.eq(new BN(0));
+
+	// If no open position but there's isolated margin, just withdraw it
+	if (!hasOpenPosition && hasIsolatedMargin) {
+		const spotMarket = driftClient.getSpotMarketAccount(
+			perpMarket.quoteSpotMarketIndex
+		) as SpotMarketAccount;
+		
+		const withdrawIxs = await withAuthority(walletPk, async () => {
+			return driftClient.getWithdrawFromIsolatedPerpPositionIxsBundle(
+				isolatedMarginAmount,
+				marketConfig.marketIndex,
+				0,
+				findAssociatedTokenAddress(walletPk, spotMarket.mint)
+			);
+		});
+		
+		const { txBase64, signatures } = await buildTransaction(walletPk, withdrawIxs);
+		return { txBase64, signatures };
+	}
+
+	// If there's an open position, we need to close it with a reduce-only order
+	// Note: We cannot withdraw isolated margin while there's an open position
+	// The position must be closed first (order filled), then withdraw in a separate transaction
+	if (!hasOpenPosition) {
 		throw new Error('No open position to close');
 	}
 
-	const direction = findDirectionToClose(position);
+	const direction = findDirectionToClose(position!);
 	const targetSize =
 		req.size !== undefined
 			? BN.min(
 				toBasePrecision(Math.abs(req.size), basePrecision),
-				bnAbs(position.baseAssetAmount)
+				bnAbs(position!.baseAssetAmount)
 			  )
-			: bnAbs(position.baseAssetAmount);
+			: bnAbs(position!.baseAssetAmount);
 
 	if (targetSize.isZero()) {
 		throw new Error('Close size resolves to zero');
 	}
-
-	const userPk = getUserAccountPublicKeySync(
-		driftClient.program.programId,
-		walletPk,
-		0
-	);
-	const userStatsPk = getUserStatsAccountPublicKey(
-		driftClient.program.programId,
-		walletPk
-	);
 
 	const orderIx = await withAuthority(walletPk, async () => {
 		const orderParams = getMarketOrderParams({
@@ -743,7 +767,9 @@ export async function buildClosePositionTx(req: ClosePositionReq) {
 		return driftClient.getPlacePerpOrderIx(orderParams);
 	});
 
-	const { txBase64, signatures } = await buildTransaction(walletPk, [orderIx]);
+	const instructions: TransactionInstruction[] = [orderIx];
+
+	const { txBase64, signatures } = await buildTransaction(walletPk, instructions);
 	return { txBase64, signatures };
 }
 

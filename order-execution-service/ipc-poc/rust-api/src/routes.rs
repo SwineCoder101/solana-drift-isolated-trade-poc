@@ -8,7 +8,7 @@ use axum::{
 	Json, Router,
 };
   use serde_json::{json, Value};
-  use tracing::info;
+  use tracing::{info, error, warn, debug};
 
 use crate::{
 	ipc::{IpcError, TsIpc},
@@ -62,6 +62,7 @@ pub fn router(state: AppState) -> Router {
 		.with_state(state)
 }
 
+#[derive(Debug)]
 struct ApiError {
 	status: StatusCode,
 	message: String,
@@ -157,10 +158,65 @@ async fn close_position_execute(
 	OriginalUri(uri): OriginalUri,
 	Json(body): Json<ClosePositionRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/orders/close", &uri, serialize_payload(&body));
-	let value = close_position_build(&state, &body).await?;
-	let executed = execute_transaction(&state, value).await?;
-	Ok(Json(executed))
+	info!("[CLOSE_POSITION_EXECUTE] Starting close position request");
+	log_request("/orders/close/execute", &uri, serialize_payload(&body));
+	
+	info!("[CLOSE_POSITION_EXECUTE] Building close position transaction for wallet: {}, market: {}, size: {:?}", 
+		body.wallet, body.market, body.size);
+	
+	let value = match close_position_build(&state, &body).await {
+		Ok(v) => {
+			let tx_preview = v.get("txBase64")
+				.and_then(|v| v.as_str())
+				.map(|s| {
+					let len = s.len();
+					if len > 50 {
+						format!("{}... ({} chars)", &s[..50], len)
+					} else {
+						s.to_string()
+					}
+				})
+				.unwrap_or_else(|| "N/A".to_string());
+			info!("[CLOSE_POSITION_EXECUTE] Successfully built transaction (preview: {})", tx_preview);
+			v
+		},
+		Err(e) => {
+			error!("[CLOSE_POSITION_EXECUTE] Failed to build transaction: {:?}", e);
+			return Err(e);
+		}
+	};
+	
+	info!("[CLOSE_POSITION_EXECUTE] Executing transaction");
+	let executed = match execute_transaction(&state, value).await {
+		Ok(result) => {
+			// Extract and log the transaction signature
+			let tx_signature = result
+				.get("txSignature")
+				.and_then(|v| v.as_str())
+				.map(|s| s.to_string())
+				.unwrap_or_else(|| "N/A".to_string());
+			
+			info!("[CLOSE_POSITION_EXECUTE] Transaction executed successfully");
+			info!("[CLOSE_POSITION_EXECUTE] Transaction signature: {}", tx_signature);
+			
+			result
+		},
+		Err(e) => {
+			error!("[CLOSE_POSITION_EXECUTE] Transaction execution failed: {:?}", e);
+			return Err(e);
+		}
+	};
+	
+	// Ensure txSignature is in the response
+	let response = if executed.get("txSignature").is_some() {
+		executed
+	} else {
+		warn!("[CLOSE_POSITION_EXECUTE] Warning: txSignature missing from response");
+		executed
+	};
+	
+	info!("[CLOSE_POSITION_EXECUTE] Close position completed successfully");
+	Ok(Json(response))
 }
 
 async fn transfer_margin(
@@ -263,9 +319,14 @@ async fn close_position_build(
 	state: &AppState,
 	body: &ClosePositionRequest,
 ) -> Result<Value, ApiError> {
+	debug!("[CLOSE_POSITION_BUILD] Starting build for wallet: {}, market: {}, size: {:?}", 
+		body.wallet, body.market, body.size);
+	
 	validate_wallet(&body.wallet)?;
+	
 	if let Some(size) = body.size {
 		if !size.is_finite() || size <= 0.0 {
+			warn!("[CLOSE_POSITION_BUILD] Invalid size provided: {}", size);
 			return Err(ApiError::new(
 				StatusCode::BAD_REQUEST,
 				"size must be positive when provided",
@@ -273,12 +334,33 @@ async fn close_position_build(
 		}
 	}
 
-	let args = json!({
-		"wallet": body.wallet,
-		"market": body.market,
-		"size": body.size,
-	});
-	call_worker(state, "closePosition", args, WORKER_TIMEOUT).await
+	// Build args conditionally - only include size if it's Some(value)
+	// TypeScript schema expects size to be optional (undefined) or number, not null
+	let args = if let Some(size) = body.size {
+		json!({
+			"wallet": body.wallet,
+			"market": body.market,
+			"size": size,
+		})
+	} else {
+		json!({
+			"wallet": body.wallet,
+			"market": body.market,
+		})
+	};
+	
+	debug!("[CLOSE_POSITION_BUILD] Calling worker with args: {:?}", args);
+	
+	match call_worker(state, "closePosition", args, WORKER_TIMEOUT).await {
+		Ok(result) => {
+			debug!("[CLOSE_POSITION_BUILD] Worker returned successfully");
+			Ok(result)
+		},
+		Err(e) => {
+			error!("[CLOSE_POSITION_BUILD] Worker call failed: {:?}", e);
+			Err(e)
+		}
+	}
 }
 
 async fn transfer_margin_build(
