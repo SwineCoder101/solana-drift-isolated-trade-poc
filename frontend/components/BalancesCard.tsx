@@ -8,9 +8,10 @@ interface BalancesCardProps {
   status: string | null;
   loading: boolean;
   onRefresh: () => void;
+  onDeposit: () => void;
 }
 
-export function BalancesCard({ adminWallet, balances, status, loading, onRefresh }: BalancesCardProps) {
+export function BalancesCard({ adminWallet, balances, status, loading, onRefresh, onDeposit }: BalancesCardProps) {
   return (
     <section className="card balances-card">
       <h2>Account Balances</h2>
@@ -20,9 +21,14 @@ export function BalancesCard({ adminWallet, balances, status, loading, onRefresh
             Admin wallet: <AddressLink address={adminWallet} />
           </p>
         )}
-        <button type="button" onClick={onRefresh} className="secondary" disabled={loading}>
-          {loading ? 'Refreshing…' : 'Refresh Balances'}
-        </button>
+        <div className="balances-card__actions">
+          <button type="button" onClick={onDeposit} className="secondary" disabled={!adminWallet}>
+            Deposit Drift Account
+          </button>
+          <button type="button" onClick={onRefresh} className="secondary" disabled={loading}>
+            {loading ? 'Refreshing…' : 'Refresh Balances'}
+          </button>
+        </div>
       </div>
       {status && <p className="status">{status}</p>}
       {!status && !balances && <p>Unable to load admin wallet balances.</p>}

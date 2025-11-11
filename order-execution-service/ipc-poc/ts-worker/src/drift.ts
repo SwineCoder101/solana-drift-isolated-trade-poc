@@ -830,7 +830,7 @@ export async function getPositions(req: WalletOnlyReq) {
 			const leverage =
 				margin > 0 ? Number((notional / margin).toFixed(4)) : null;
 			const isolatedMargin = convertToNumber(
-				pos.isolatedPositionScaledBalance ?? ZERO,
+				driftClient.getIsolatedPerpPositionTokenAmount(pos.marketIndex) ?? ZERO,
 				QUOTE_PRECISION
 			);
 
@@ -956,6 +956,9 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 		return [];
 	}
 
+	// Ensure user is cached so getIsolatedPerpPositionTokenAmount works
+	await ensureDriftUserCached(walletPk, userAccount);
+
 	if (!marketMaps) {
 		marketMaps = buildMarketMaps();
 	}
@@ -967,9 +970,12 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 		debugLog('position details: unable to init user helper', err);
 	}
 
-	return userAccount.perpPositions
-		.filter((pos) => !pos.baseAssetAmount.eq(new BN(0)))
-		.map((pos) => {
+	const positions = userAccount.perpPositions.filter(
+		(pos) => !pos.baseAssetAmount.eq(new BN(0))
+	);
+
+	return Promise.all(
+		positions.map(async (pos) => {
 			const marketCfg = marketMaps?.byIndex.get(pos.marketIndex);
 			const perpMarket = driftClient.getPerpMarketAccount(
 				pos.marketIndex
@@ -993,10 +999,14 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 			const notional = Math.abs(size) * currentPrice;
 			const leverage =
 				margin > 0 ? Number((notional / margin).toFixed(4)) : null;
-			const isolatedMargin = convertToNumber(
-				pos.isolatedPositionScaledBalance ?? ZERO,
-				QUOTE_PRECISION
-			);
+			
+			// Get isolated margin using the cached user context
+			const isolatedMargin = await withAuthority(walletPk, async () => {
+				return convertToNumber(
+					driftClient.getIsolatedPerpPositionTokenAmount(pos.marketIndex) ?? ZERO,
+					QUOTE_PRECISION
+				);
+			});
 
 			let liquidationPrice: number | null = null;
 			if (userHelper) {
@@ -1029,7 +1039,8 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 				liquidationPrice,
 				isolatedMargin,
 			};
-		});
+		})
+	);
 }
 
 export async function buildDepositTokenTx(req: DepositTokenReq) {

@@ -57,6 +57,7 @@ async function main() {
 		console.log(`  Unrealized PnL: ${pos.unrealizedPnl}`);
 		console.log(`  Leverage: ${pos.leverage ?? 'N/A'}`);
 		console.log(`  Liquidation Price: ${pos.liquidationPrice ?? 'N/A'}`);
+		console.log(`  Isolated Margin: ${pos.isolatedMargin}`);
 		console.log('');
 	});
 }

@@ -227,7 +227,14 @@ button.secondary:disabled {
   font-size: 0.95rem;
 }
 
-.balances-card__header button.secondary {
+.balances-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.balances-card__header button.secondary,
+.balances-card__actions button.secondary {
   padding: 0.4rem 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid rgba(148, 163, 184, 0.4);

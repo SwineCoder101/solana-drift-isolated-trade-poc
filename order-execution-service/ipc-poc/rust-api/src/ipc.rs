@@ -265,17 +265,24 @@ impl TsIpc {
 		args: Value,
 		timeout: Duration,
 	) -> Result<Value, IpcError> {
-		match self
+		let result = self
 			.inner
 			.call_internal(func, args.clone(), timeout)
-			.await
-		{
+			.await;
+		match result {
+			Ok(value) => {
+				tracing::info!(function = func, payload = %value, "worker response");
+				Ok(value)
+			}
 			Err(IpcError::WorkerCrashed) | Err(IpcError::Write(_)) => {
 				self.inner.handle_worker_failure().await;
 				self.inner.ensure_worker().await?;
-				self.inner.call_internal(func, args, timeout).await
+				self.inner.call_internal(func, args, timeout).await.map(|value| {
+					tracing::info!(function = func, payload = %value, "worker response");
+					value
+				})
 			}
-			result => result,
+			Err(err) => Err(err),
 		}
 	}
 }

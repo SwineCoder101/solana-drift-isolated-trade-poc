@@ -7,9 +7,10 @@ interface PositionsTableProps {
   onRefresh: () => void;
   onClose: (market: string) => void;
   onWithdraw: (market: string) => void;
+  onDeposit: (market: string) => void;
 }
 
-export function PositionsTable({ positions, status, loading, onRefresh, onClose, onWithdraw }: PositionsTableProps) {
+export function PositionsTable({ positions, status, loading, onRefresh, onClose, onWithdraw, onDeposit }: PositionsTableProps) {
   return (
     <section className="card positions-card">
       <div className="positions-card__header">
@@ -56,6 +57,9 @@ export function PositionsTable({ positions, status, loading, onRefresh, onClose,
                     <td>
                       <button onClick={() => onClose(pos.market)} className="secondary">
                         Close
+                      </button>
+                      <button onClick={() => onDeposit(pos.market)} className="secondary">
+                        Deposit
                       </button>
                       <button onClick={() => onWithdraw(pos.market)} className="secondary">
                         Withdraw

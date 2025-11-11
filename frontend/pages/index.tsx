@@ -169,6 +169,69 @@ function HomePage() {
     }
   };
 
+  const handleDepositIsolated = async (market: string) => {
+    if (!resolvedWallet) {
+      setStatus('Admin wallet unavailable.');
+      return;
+    }
+    const input = prompt('Deposit margin amount', '1');
+    const amt = input ? Number(input) : NaN;
+    if (!Number.isFinite(amt) || amt <= 0) return;
+
+    setStatus('Depositing margin...');
+    try {
+      const res = await fetch(`${ORDER_EXECUTION_URL}/margin/transfer/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet: resolvedWallet,
+          market,
+          delta: Math.abs(amt),
+        }),
+      });
+      if (!res.ok) {
+        const payload = await res.json().catch(() => null);
+        throw new Error(payload?.error ?? 'Deposit failed');
+      }
+      const payload = await res.json().catch(() => ({}));
+      setStatus(`Margin deposited: ${payload.txSignature ?? 'signature unavailable'}`);
+      await refreshPositions();
+      await refreshBalances();
+      addHistory({ action: 'deposit', market, amount: amt });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Deposit failed';
+      setStatus(message);
+    }
+  };
+
+  const handleDepositDriftAccount = async () => {
+    if (!adminWallet) {
+      setStatus('Admin wallet unavailable.');
+      return;
+    }
+    const input = prompt('Deposit amount (SOL)', '0.1');
+    const amt = input ? Number(input) : NaN;
+    if (!Number.isFinite(amt) || amt <= 0) return;
+    setStatus('Depositing to Drift account...');
+    try {
+      const res = await fetch(`${ORDER_EXECUTION_URL}/margin/deposit-native/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet: adminWallet, amount: amt, market: 'SOL' }),
+      });
+      if (!res.ok) {
+        const payload = await res.json().catch(() => null);
+        throw new Error(payload?.error ?? 'Deposit failed');
+      }
+      const payload = await res.json().catch(() => ({}));
+      setStatus(`Deposit submitted: ${payload.txSignature ?? 'signature unavailable'}`);
+      await refreshBalances();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Deposit failed';
+      setStatus(message);
+    }
+  };
+
   const address = useMemo(() => publicKey?.toBase58() ?? 'Not connected', [publicKey]);
 
   return (
@@ -202,6 +265,9 @@ function HomePage() {
               onRefresh={() => {
                 void refreshBalances();
               }}
+              onDeposit={() => {
+                void handleDepositDriftAccount();
+              }}
             />
           </div>
 
@@ -230,6 +296,7 @@ function HomePage() {
             }}
             onClose={handleClosePosition}
             onWithdraw={handleWithdrawMargin}
+            onDeposit={handleDepositIsolated}
           />
 
           <TradeHistory history={tradeHistory} />

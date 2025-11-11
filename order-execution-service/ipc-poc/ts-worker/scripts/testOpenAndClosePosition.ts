@@ -26,7 +26,7 @@ async function main() {
     const connection = new Connection(RPC_URL, 'confirmed');
     const baseWallet = new Wallet(serverKeypair);
 
-    const marketIndex = 1;
+    const marketIndex = 0;
 
     const driftClient = new DriftClient({
         connection,
@@ -90,7 +90,7 @@ async function main() {
     // );
 
     const transferCrossMarginSignature = await driftClient.transferIsolatedPerpPositionDeposit(
-        toQuotePrecision(-5),
+        toQuotePrecision(5),
         marketIndex,
     );
 
