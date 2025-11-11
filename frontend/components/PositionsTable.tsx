@@ -30,23 +30,29 @@ export function PositionsTable({ positions, status, loading, onRefresh, onClose,
                 <th>Entry</th>
                 <th>Current</th>
                 <th>Unrealized PnL</th>
-                <th>Leverage</th>
-                <th>Liq Price</th>
-                <th>Actions</th>
+              <th>Leverage</th>
+              <th>Isolated Margin</th>
+              <th>Liq Price</th>
+              <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {positions.map((pos) => {
                 const pnl = typeof pos.unrealizedPnl === 'number' ? pos.unrealizedPnl : Number(pos.unrealizedPnl ?? 0);
                 return (
-                  <tr key={`${pos.market}-${pos.positionSize}`}>
-                    <td>{pos.market}</td>
-                    <td>{pos.positionSize}</td>
-                    <td>{pos.entryPrice ?? '—'}</td>
-                    <td>{pos.currentPrice ?? '—'}</td>
-                    <td>{pnl.toFixed(4)}</td>
-                    <td>{pos.leverage ?? '—'}</td>
-                    <td>{pos.liquidationPrice ?? '—'}</td>
+                <tr key={`${pos.market}-${pos.positionSize}`}>
+                  <td>{pos.market}</td>
+                  <td>{pos.positionSize}</td>
+                  <td>{pos.entryPrice ?? '—'}</td>
+                  <td>{pos.currentPrice ?? '—'}</td>
+                  <td>{pnl.toFixed(4)}</td>
+                  <td>{pos.leverage ?? '—'}</td>
+                  <td>
+                    {typeof pos.isolatedMargin === 'number'
+                      ? pos.isolatedMargin.toFixed(4)
+                      : '—'}
+                  </td>
+                  <td>{pos.liquidationPrice ?? '—'}</td>
                     <td>
                       <button onClick={() => onClose(pos.market)} className="secondary">
                         Close

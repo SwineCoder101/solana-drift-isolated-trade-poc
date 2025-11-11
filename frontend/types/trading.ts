@@ -25,6 +25,7 @@ export type PositionRow = {
   unrealizedPnl: number;
   leverage: number | null;
   liquidationPrice: number | null;
+  isolatedMargin: number;
 };
 
 export type ServiceStatus = 'up' | 'down' | 'checking';

@@ -514,7 +514,6 @@ export async function initDrift(): Promise<void> {
 	if (initialized) {
 		return;
 	}
-	await driftClient.initialize(usdcMint.publicKey, true);
 	await driftClient.subscribe();
 	marketMaps = buildMarketMaps();
 	initialized = true;
@@ -830,6 +829,10 @@ export async function getPositions(req: WalletOnlyReq) {
 			const margin = convertToNumber(leverageDenominator, QUOTE_PRECISION);
 			const leverage =
 				margin > 0 ? Number((notional / margin).toFixed(4)) : null;
+			const isolatedMargin = convertToNumber(
+				pos.isolatedPositionScaledBalance ?? ZERO,
+				QUOTE_PRECISION
+			);
 
 			return {
 				market: marketCfg?.symbol ?? `MARKET_${pos.marketIndex}`,
@@ -838,6 +841,7 @@ export async function getPositions(req: WalletOnlyReq) {
 				liqPrice: null as number | null,
 				leverage,
 				unrealizedPnl: convertToNumber(pnl, QUOTE_PRECISION),
+				isolatedMargin,
 			};
 		});
 }
@@ -989,6 +993,10 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 			const notional = Math.abs(size) * currentPrice;
 			const leverage =
 				margin > 0 ? Number((notional / margin).toFixed(4)) : null;
+			const isolatedMargin = convertToNumber(
+				pos.isolatedPositionScaledBalance ?? ZERO,
+				QUOTE_PRECISION
+			);
 
 			let liquidationPrice: number | null = null;
 			if (userHelper) {
@@ -1019,6 +1027,7 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 				unrealizedPnl,
 				leverage,
 				liquidationPrice,
+				isolatedMargin,
 			};
 		});
 }
