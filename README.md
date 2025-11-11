@@ -237,4 +237,42 @@ Environment overrides can be supplied through `.env` or `docker compose` CLI fla
 4. **Trade history**
    - The UI calls `GET /history` on the indexing service for authoritative trade data. The streamer ingests Drift program logs via WebSocket (`RPC_WS_URL`), replays the full transaction via HTTP RPC, extracts account/token deltas, and stores them in Postgres. When the streamer is down or backfill hasn’t run, the UI can fall back to `GET /trade-history` on the order execution API.
 
+### Isolated Perp Money Flow
+
+```
+Legend:
+a) depositIntoIsolatedPerpPosition
+b) placePerpOrder (optional isolatedPositionDepositAmount)
+c) transferIsolatedPerpPositionDeposit
+d) withdrawFromIsolatedPerpPosition
+e) getIsolatedPerpPositionTokenAmount
+```
+
+```mermaid
+flowchart LR
+    subgraph Wallet
+        W(Quote Token Wallet)
+    end
+
+    subgraph Drift_User
+        X(Cross Margin Balance)
+        subgraph Perp_Position
+            P(Isolated Position)
+            M(Isolated Margin)
+        end
+    end
+
+    subgraph Market
+        O(Order Book)
+    end
+
+    W -- a) --> M
+    M -- b) --> O
+    X -- c) --> M
+    M -- c) --> X
+    M -- d) --> W
+    M -- e) --> U[Metrics / UI]
+    O -- Close Position --> X
+```
+
 By separating execution from indexing we keep signing/tx submission isolated inside the order-execution service while the indexer focuses on analytics and can be scaled independently.

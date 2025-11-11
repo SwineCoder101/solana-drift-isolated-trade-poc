@@ -1,0 +1,5146 @@
+{
+  "authority": {
+    "_bn": {
+      "negative": 0,
+      "words": [
+        10676827,
+        52241294,
+        27107468,
+        42132854,
+        37899153,
+        17697592,
+        58452615,
+        22086262,
+        41959279,
+        1992856,
+        0
+      ],
+      "length": 10,
+      "red": null
+    }
+  },
+  "delegate": {
+    "_bn": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    }
+  },
+  "name": [
+    77,
+    97,
+    105,
+    110,
+    32,
+    65,
+    99,
+    99,
+    111,
+    117,
+    110,
+    116,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32,
+    32
+  ],
+  "spotPositions": [
+    {
+      "scaledBalance": {
+        "negative": 0,
+        "words": [
+          19083786,
+          602,
+          0
+        ],
+        "length": 2,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "cumulativeDeposits": {
+        "negative": 0,
+        "words": [
+          35000000
+        ],
+        "length": 1,
+        "red": null
+      },
+      "marketIndex": 0,
+      "balanceType": {
+        "deposit": {}
+      },
+      "openOrders": 0,
+      "padding": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scaledBalance": {
+        "negative": 0,
+        "words": [
+          2107,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "cumulativeDeposits": {
+        "negative": 0,
+        "words": [
+          50000000
+        ],
+        "length": 1,
+        "red": null
+      },
+      "marketIndex": 1,
+      "balanceType": {
+        "deposit": {}
+      },
+      "openOrders": 0,
+      "padding": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "cumulativeDeposits": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "marketIndex": 0,
+      "balanceType": {
+        "deposit": {}
+      },
+      "openOrders": 0,
+      "padding": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "cumulativeDeposits": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "marketIndex": 0,
+      "balanceType": {
+        "deposit": {}
+      },
+      "openOrders": 0,
+      "padding": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "cumulativeDeposits": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "marketIndex": 0,
+      "balanceType": {
+        "deposit": {}
+      },
+      "openOrders": 0,
+      "padding": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "cumulativeDeposits": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "marketIndex": 0,
+      "balanceType": {
+        "deposit": {}
+      },
+      "openOrders": 0,
+      "padding": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "cumulativeDeposits": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "marketIndex": 0,
+      "balanceType": {
+        "deposit": {}
+      },
+      "openOrders": 0,
+      "padding": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "cumulativeDeposits": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "marketIndex": 0,
+      "balanceType": {
+        "deposit": {}
+      },
+      "openOrders": 0,
+      "padding": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "perpPositions": [
+    {
+      "lastCumulativeFundingRate": {
+        "negative": 0,
+        "words": [
+          17935685,
+          1518
+        ],
+        "length": 2,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          52278400,
+          25
+        ],
+        "length": 2,
+        "red": null
+      },
+      "quoteAssetAmount": {
+        "negative": 1,
+        "words": [
+          22115835,
+          4
+        ],
+        "length": 2,
+        "red": null
+      },
+      "quoteBreakEvenAmount": {
+        "negative": 1,
+        "words": [
+          22144654,
+          4
+        ],
+        "length": 2,
+        "red": null
+      },
+      "quoteEntryAmount": {
+        "negative": 1,
+        "words": [
+          21412999,
+          4
+        ],
+        "length": 2,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "settledPnl": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lpShares": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "isolatedPositionScaledBalance": {
+        "negative": 0,
+        "words": [
+          23783884,
+          530,
+          0
+        ],
+        "length": 2,
+        "red": null
+      },
+      "lastQuoteAssetAmountPerLp": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "padding": [
+        0,
+        0
+      ],
+      "maxMarginRatio": 0,
+      "marketIndex": 0,
+      "openOrders": 0,
+      "positionFlag": 1
+    },
+    {
+      "lastCumulativeFundingRate": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteBreakEvenAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteEntryAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "settledPnl": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lpShares": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "isolatedPositionScaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lastQuoteAssetAmountPerLp": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "padding": [
+        0,
+        0
+      ],
+      "maxMarginRatio": 0,
+      "marketIndex": 0,
+      "openOrders": 0,
+      "positionFlag": 0
+    },
+    {
+      "lastCumulativeFundingRate": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteBreakEvenAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteEntryAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "settledPnl": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lpShares": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "isolatedPositionScaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lastQuoteAssetAmountPerLp": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "padding": [
+        0,
+        0
+      ],
+      "maxMarginRatio": 0,
+      "marketIndex": 0,
+      "openOrders": 0,
+      "positionFlag": 0
+    },
+    {
+      "lastCumulativeFundingRate": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteBreakEvenAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteEntryAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "settledPnl": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lpShares": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "isolatedPositionScaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lastQuoteAssetAmountPerLp": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "padding": [
+        0,
+        0
+      ],
+      "maxMarginRatio": 0,
+      "marketIndex": 0,
+      "openOrders": 0,
+      "positionFlag": 0
+    },
+    {
+      "lastCumulativeFundingRate": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteBreakEvenAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteEntryAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "settledPnl": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lpShares": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "isolatedPositionScaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lastQuoteAssetAmountPerLp": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "padding": [
+        0,
+        0
+      ],
+      "maxMarginRatio": 0,
+      "marketIndex": 0,
+      "openOrders": 0,
+      "positionFlag": 0
+    },
+    {
+      "lastCumulativeFundingRate": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteBreakEvenAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteEntryAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "settledPnl": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lpShares": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "isolatedPositionScaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lastQuoteAssetAmountPerLp": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "padding": [
+        0,
+        0
+      ],
+      "maxMarginRatio": 0,
+      "marketIndex": 0,
+      "openOrders": 0,
+      "positionFlag": 0
+    },
+    {
+      "lastCumulativeFundingRate": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteBreakEvenAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteEntryAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "settledPnl": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lpShares": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "isolatedPositionScaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lastQuoteAssetAmountPerLp": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "padding": [
+        0,
+        0
+      ],
+      "maxMarginRatio": 0,
+      "marketIndex": 0,
+      "openOrders": 0,
+      "positionFlag": 0
+    },
+    {
+      "lastCumulativeFundingRate": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteBreakEvenAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteEntryAmount": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openBids": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "openAsks": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "settledPnl": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lpShares": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "isolatedPositionScaledBalance": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "lastQuoteAssetAmountPerLp": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "padding": [
+        0,
+        0
+      ],
+      "maxMarginRatio": 0,
+      "marketIndex": 0,
+      "openOrders": 0,
+      "positionFlag": 0
+    }
+  ],
+  "orders": [
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          18151524,
+          6,
+          0
+        ],
+        "length": 2,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          10000000,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          10000000,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          1649036,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          30167772,
+          2
+        ],
+        "length": 2,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          30884172,
+          2
+        ],
+        "length": 2,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          18023910,
+          26
+        ],
+        "length": 2,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 14,
+      "marketIndex": 0,
+      "status": {
+        "filled": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "perp": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 44,
+      "postedSlotTail": 100,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          18055647,
+          6,
+          0
+        ],
+        "length": 2,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          32891136,
+          1,
+          0
+        ],
+        "length": 2,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          32891136,
+          1,
+          0
+        ],
+        "length": 2,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          16864599,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          34051372,
+          2
+        ],
+        "length": 2,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          35388872,
+          2
+        ],
+        "length": 2,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          17987096,
+          26
+        ],
+        "length": 2,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 10,
+      "marketIndex": 0,
+      "status": {
+        "filled": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "perp": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 80,
+      "postedSlotTail": 223,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    },
+    {
+      "slot": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "price": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmount": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "baseAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "quoteAssetAmountFilled": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "triggerPrice": {
+        "negative": 0,
+        "words": [
+          0,
+          0,
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionStartPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "auctionEndPrice": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "maxTs": {
+        "negative": 0,
+        "words": [
+          0
+        ],
+        "length": 1,
+        "red": null
+      },
+      "oraclePriceOffset": 0,
+      "orderId": 0,
+      "marketIndex": 0,
+      "status": {
+        "init": {}
+      },
+      "orderType": {
+        "market": {}
+      },
+      "marketType": {
+        "spot": {}
+      },
+      "userOrderId": 0,
+      "existingPositionDirection": {
+        "long": {}
+      },
+      "direction": {
+        "long": {}
+      },
+      "reduceOnly": false,
+      "postOnly": false,
+      "immediateOrCancel": false,
+      "triggerCondition": {
+        "above": {}
+      },
+      "auctionDuration": 0,
+      "postedSlotTail": 0,
+      "bitFlags": 0,
+      "padding": [
+        0
+      ]
+    }
+  ],
+  "lastAddPerpLpSharesTs": {
+    "negative": 0,
+    "words": [
+      0
+    ],
+    "length": 1,
+    "red": null
+  },
+  "totalDeposits": {
+    "negative": 0,
+    "words": [
+      6851640,
+      1,
+      0
+    ],
+    "length": 2,
+    "red": null
+  },
+  "totalWithdraws": {
+    "negative": 0,
+    "words": [
+      0,
+      0,
+      0
+    ],
+    "length": 1,
+    "red": null
+  },
+  "totalSocialLoss": {
+    "negative": 0,
+    "words": [
+      0,
+      0,
+      0
+    ],
+    "length": 1,
+    "red": null
+  },
+  "settledPerpPnl": {
+    "negative": 0,
+    "words": [
+      0
+    ],
+    "length": 1,
+    "red": null
+  },
+  "cumulativeSpotFees": {
+    "negative": 0,
+    "words": [
+      0
+    ],
+    "length": 1,
+    "red": null
+  },
+  "cumulativePerpFunding": {
+    "negative": 1,
+    "words": [
+      660895
+    ],
+    "length": 1,
+    "red": null
+  },
+  "liquidationMarginFreed": {
+    "negative": 0,
+    "words": [
+      0,
+      0,
+      0
+    ],
+    "length": 1,
+    "red": null
+  },
+  "lastActiveSlot": {
+    "negative": 0,
+    "words": [
+      18151561,
+      6,
+      0
+    ],
+    "length": 2,
+    "red": null
+  },
+  "nextOrderId": 15,
+  "maxMarginRatio": 0,
+  "nextLiquidationId": 1,
+  "subAccountId": 0,
+  "status": 0,
+  "isMarginTradingEnabled": false,
+  "idle": false,
+  "openOrders": 0,
+  "hasOpenOrder": false,
+  "openAuctions": 0,
+  "hasOpenAuction": false,
+  "marginMode": {
+    "default": {}
+  },
+  "poolId": 0,
+  "padding1": [
+    0,
+    0,
+    0
+  ],
+  "lastFuelBonusUpdateTs": 1762854356,
+  "padding": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ]
+}

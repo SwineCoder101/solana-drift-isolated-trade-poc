@@ -53,11 +53,18 @@ export const DepositTokenReqSchema = z.object({
 	market: z.string().min(1).optional(),
 });
 
+export const DepositIsolatedReqSchema = z.object({
+	wallet: z.string().min(32),
+	market: z.string().min(1),
+	amount: z.number().positive(),
+});
+
 export type WalletOnlyReq = z.infer<typeof WalletOnlySchema>;
 export type MarketQueryReq = z.infer<typeof MarketQuerySchema>;
 export type IsolatedBalanceReq = z.infer<typeof IsolatedBalanceSchema>;
 export type DepositNativeReq = z.infer<typeof DepositNativeReqSchema>;
 export type DepositTokenReq = z.infer<typeof DepositTokenReqSchema>;
+export type DepositIsolatedReq = z.infer<typeof DepositIsolatedReqSchema>;
 
 export const FnNames = [
 	'openIsolated',

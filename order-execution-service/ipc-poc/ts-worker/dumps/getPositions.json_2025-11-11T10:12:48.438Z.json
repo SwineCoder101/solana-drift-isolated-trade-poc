@@ -1,0 +1,823 @@
+[
+  {
+    "lastCumulativeFundingRate": {
+      "negative": 0,
+      "words": [
+        17935685,
+        1518
+      ],
+      "length": 2,
+      "red": null
+    },
+    "baseAssetAmount": {
+      "negative": 0,
+      "words": [
+        52278400,
+        25
+      ],
+      "length": 2,
+      "red": null
+    },
+    "quoteAssetAmount": {
+      "negative": 1,
+      "words": [
+        22115835,
+        4
+      ],
+      "length": 2,
+      "red": null
+    },
+    "quoteBreakEvenAmount": {
+      "negative": 1,
+      "words": [
+        22144654,
+        4
+      ],
+      "length": 2,
+      "red": null
+    },
+    "quoteEntryAmount": {
+      "negative": 1,
+      "words": [
+        21412999,
+        4
+      ],
+      "length": 2,
+      "red": null
+    },
+    "openBids": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openAsks": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "settledPnl": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lpShares": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "isolatedPositionScaledBalance": {
+      "negative": 0,
+      "words": [
+        23783884,
+        530,
+        0
+      ],
+      "length": 2,
+      "red": null
+    },
+    "lastQuoteAssetAmountPerLp": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "padding": [
+      0,
+      0
+    ],
+    "maxMarginRatio": 0,
+    "marketIndex": 0,
+    "openOrders": 0,
+    "positionFlag": 1
+  },
+  {
+    "lastCumulativeFundingRate": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "baseAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteBreakEvenAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteEntryAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openBids": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openAsks": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "settledPnl": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lpShares": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "isolatedPositionScaledBalance": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lastQuoteAssetAmountPerLp": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "padding": [
+      0,
+      0
+    ],
+    "maxMarginRatio": 0,
+    "marketIndex": 0,
+    "openOrders": 0,
+    "positionFlag": 0
+  },
+  {
+    "lastCumulativeFundingRate": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "baseAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteBreakEvenAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteEntryAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openBids": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openAsks": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "settledPnl": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lpShares": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "isolatedPositionScaledBalance": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lastQuoteAssetAmountPerLp": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "padding": [
+      0,
+      0
+    ],
+    "maxMarginRatio": 0,
+    "marketIndex": 0,
+    "openOrders": 0,
+    "positionFlag": 0
+  },
+  {
+    "lastCumulativeFundingRate": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "baseAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteBreakEvenAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteEntryAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openBids": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openAsks": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "settledPnl": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lpShares": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "isolatedPositionScaledBalance": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lastQuoteAssetAmountPerLp": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "padding": [
+      0,
+      0
+    ],
+    "maxMarginRatio": 0,
+    "marketIndex": 0,
+    "openOrders": 0,
+    "positionFlag": 0
+  },
+  {
+    "lastCumulativeFundingRate": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "baseAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteBreakEvenAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteEntryAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openBids": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openAsks": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "settledPnl": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lpShares": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "isolatedPositionScaledBalance": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lastQuoteAssetAmountPerLp": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "padding": [
+      0,
+      0
+    ],
+    "maxMarginRatio": 0,
+    "marketIndex": 0,
+    "openOrders": 0,
+    "positionFlag": 0
+  },
+  {
+    "lastCumulativeFundingRate": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "baseAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteBreakEvenAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteEntryAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openBids": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openAsks": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "settledPnl": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lpShares": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "isolatedPositionScaledBalance": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lastQuoteAssetAmountPerLp": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "padding": [
+      0,
+      0
+    ],
+    "maxMarginRatio": 0,
+    "marketIndex": 0,
+    "openOrders": 0,
+    "positionFlag": 0
+  },
+  {
+    "lastCumulativeFundingRate": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "baseAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteBreakEvenAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteEntryAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openBids": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openAsks": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "settledPnl": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lpShares": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "isolatedPositionScaledBalance": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lastQuoteAssetAmountPerLp": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "padding": [
+      0,
+      0
+    ],
+    "maxMarginRatio": 0,
+    "marketIndex": 0,
+    "openOrders": 0,
+    "positionFlag": 0
+  },
+  {
+    "lastCumulativeFundingRate": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "baseAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteAssetAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteBreakEvenAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "quoteEntryAmount": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openBids": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "openAsks": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "settledPnl": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lpShares": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "isolatedPositionScaledBalance": {
+      "negative": 0,
+      "words": [
+        0,
+        0,
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "lastQuoteAssetAmountPerLp": {
+      "negative": 0,
+      "words": [
+        0
+      ],
+      "length": 1,
+      "red": null
+    },
+    "padding": [
+      0,
+      0
+    ],
+    "maxMarginRatio": 0,
+    "marketIndex": 0,
+    "openOrders": 0,
+    "positionFlag": 0
+  }
+]

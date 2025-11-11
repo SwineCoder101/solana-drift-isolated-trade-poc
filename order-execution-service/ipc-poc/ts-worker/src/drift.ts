@@ -56,8 +56,9 @@ import {
 	WalletOnlyReq,
 	DepositNativeReq,
 	DepositTokenReq,
+	DepositIsolatedReq,
 } from './types.js';
-import { debugLog } from './logger.js';
+import { debugLog, printPayload } from './logger.js';
 
 
 type DriftTx = Transaction | VersionedTransaction;
@@ -175,11 +176,24 @@ async function ensureDriftUserCached(
 	wallet: PublicKey,
 	userAccount?: UserAccount | null
 ) {
-	if (!userAccount) {
-		return;
-	}
 	await withAuthority(wallet, async () => {
 		if (!driftClient.hasUser(0, wallet)) {
+			// If user account doesn't exist, we still need to add it (even if null)
+			// so the client knows about the user. If userAccount is null, addUser
+			// will handle it appropriately.
+			if (userAccount) {
+				await driftClient.addUser(0, wallet, userAccount);
+			} else {
+				// User account doesn't exist yet, but we still need to register the user
+				// so methods like getIsolatedPerpPositionTokenAmount work
+				// We'll fetch it fresh or let it be initialized
+				const fetched = await fetchUserAccount(wallet);
+				if (fetched) {
+					await driftClient.addUser(0, wallet, fetched);
+				}
+			}
+		} else if (userAccount) {
+			// User already exists, update it with fresh data
 			await driftClient.addUser(0, wallet, userAccount);
 		}
 	});
@@ -500,6 +514,7 @@ export async function initDrift(): Promise<void> {
 	if (initialized) {
 		return;
 	}
+	await driftClient.initialize(usdcMint.publicKey, true);
 	await driftClient.subscribe();
 	marketMaps = buildMarketMaps();
 	initialized = true;
@@ -612,6 +627,66 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 	]);
 
 	return { txBase64, signatures, meta };
+}
+
+export async function buildInitializeAndDepositIsolatedTx(req: DepositIsolatedReq) {
+	const walletPk = new PublicKey(req.wallet);
+	const marketConfig = resolveMarketConfig(req.market);
+	const perpMarket = driftClient.getPerpMarketAccount(
+		marketConfig.marketIndex
+	) as PerpMarketAccount;
+	const spotMarketIndex = perpMarket.quoteSpotMarketIndex;
+	const spotMarket = driftClient.getSpotMarketAccount(
+		spotMarketIndex
+	) as SpotMarketAccount;
+
+	const depositAmount = toQuotePrecision(req.amount);
+
+	const initIxs = (await ensureUserInitIxs(walletPk)) as TransactionInstruction[];
+	const userAccount = await fetchUserAccount(walletPk);
+	await ensureDriftUserCached(walletPk, userAccount);
+
+	const userStatsPk = getUserStatsAccountPublicKey(
+		driftClient.program.programId,
+		walletPk
+	);
+
+	const tokenProgram = driftClient.getTokenProgramForSpotMarket(spotMarket);
+	const userTokenAccount = await driftClient.getAssociatedTokenAccount(
+		spotMarketIndex,
+		false,
+		tokenProgram,
+		walletPk
+	);
+
+	const userTokenAccountInfo = await connection.getAccountInfo(userTokenAccount);
+	const ensureTokenAccountIx =
+		userTokenAccountInfo === null
+			? driftClient.createAssociatedTokenAccountIdempotentInstruction(
+					userTokenAccount,
+					walletPk,
+					walletPk,
+					spotMarket.mint,
+					tokenProgram
+			  )
+			: null;
+
+	const depositIx = await withAuthority(walletPk, async () => {
+		logInstruction('depositIntoIsolatedPerpPosition', walletPk, spotMarket.mint);
+		return driftClient.getDepositIntoIsolatedPerpPositionIx(
+			depositAmount,
+			marketConfig.marketIndex,
+			userTokenAccount
+		);
+	});
+
+	const { txBase64, signatures } = await buildTransaction(walletPk, [
+		...initIxs,
+		...(ensureTokenAccountIx ? [ensureTokenAccountIx] : []),
+		depositIx,
+	]);
+
+	return { txBase64, signatures };
 }
 
 export async function buildClosePositionTx(req: ClosePositionReq) {
@@ -736,7 +811,7 @@ export async function getPositions(req: WalletOnlyReq) {
 	if (!marketMaps) {
 		marketMaps = buildMarketMaps();
 	}
-
+	
 	return userAccount.perpPositions
 		.filter((pos) => !pos.baseAssetAmount.eq(new BN(0)))
 		.map((pos) => {
@@ -793,6 +868,10 @@ export async function getMarket(req: MarketQueryReq) {
 export async function getIsolatedBalance(req: IsolatedBalanceReq) {
 	const walletPk = new PublicKey(req.wallet);
 	const marketCfg = resolveMarketConfig(req.market);
+	
+	// Fetch and cache user account before accessing it
+	const userAccount = await fetchUserAccount(walletPk);
+	await ensureDriftUserCached(walletPk, userAccount);
 
 	const amount = await withAuthority(walletPk, async () => {
 		return driftClient.getIsolatedPerpPositionTokenAmount(
