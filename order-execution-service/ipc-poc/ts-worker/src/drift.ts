@@ -57,6 +57,7 @@ import {
 	DepositNativeReq,
 	DepositTokenReq,
 } from './types.js';
+import { debugLog } from './logger.js';
 
 
 type DriftTx = Transaction | VersionedTransaction;
@@ -163,13 +164,11 @@ function normaliseMarketKey(value: string): string {
 }
 
 function logInstruction(label: string, wallet: PublicKey, mint: PublicKey) {
-	console.error(
-		JSON.stringify({
-			label,
-			wallet: wallet.toBase58(),
-			mint: mint.toBase58(),
-		})
-	);
+	debugLog('instruction', {
+		label,
+		wallet: wallet.toBase58(),
+		mint: mint.toBase58(),
+	});
 }
 
 async function ensureDriftUserCached(
@@ -338,8 +337,9 @@ function toQuotePrecision(amount: number): BN {
 	return new BN(Math.round(amount * 1e6));
 }
 
-function toBasePrecision(amount: number): BN {
-	return new BN(Math.round(amount * 1e9));
+function toBasePrecision(amount: number, precision: BN): BN {
+	const scale = precision.toNumber();
+	return new BN(Math.round(amount * scale));
 }
 
 function findAssociatedTokenAddress(owner: PublicKey, mint: PublicKey): PublicKey {
@@ -374,7 +374,7 @@ async function fetchTokenBalancesForOwner(owner: PublicKey): Promise<TokenBalanc
 				aggregates.set(mint, current);
 			}
 		} catch (err) {
-			console.warn('token balance fetch failed', err);
+		debugLog('token balance fetch failed', err);
 		}
 	}
 
@@ -515,9 +515,11 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 	const spotMarket = driftClient.getSpotMarketAccount(
 		spotMarketIndex
 	) as SpotMarketAccount;
+	const amm = perpMarket.amm as unknown as { basePrecision?: BN };
+	const basePrecision = amm.basePrecision ?? BASE_PRECISION;
 
 	const depositAmount = toQuotePrecision(req.margin);
-	const baseAmount = toBasePrecision(Math.abs(req.size));
+	const baseAmount = toBasePrecision(Math.abs(req.size), basePrecision);
 	const direction = req.size >= 0 ? PositionDirection.LONG : PositionDirection.SHORT;
 
 	const userPk = getUserAccountPublicKeySync(
@@ -530,23 +532,23 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 	const userAccount = await fetchUserAccount(walletPk);
 	await ensureDriftUserCached(walletPk, userAccount);
 
-	console.log('userAccount: ', userAccount);
-	console.log('userPk: ', userPk);
-	console.log('walletPk: ', walletPk);
-	console.log('marketConfig: ', marketConfig);
-	console.log('perpMarket: ', perpMarket);
-	console.log('spotMarket: ', spotMarket);
-	console.log('spotMarketIndex: ', spotMarketIndex);
-	console.log('depositAmount: ', depositAmount);
-	console.log('baseAmount: ', baseAmount);
+	debugLog('open isolated userAccount', userAccount);
+	debugLog('open isolated userPk', userPk.toBase58());
+	debugLog('open isolated walletPk', walletPk.toBase58());
+	debugLog('open isolated marketConfig', marketConfig.symbol);
+	debugLog('open isolated perpMarket index', perpMarket.marketIndex);
+	debugLog('open isolated spotMarket index', spotMarket.marketIndex);
+	debugLog('open isolated spotMarketIndex', spotMarketIndex);
+	debugLog('open isolated depositAmount', depositAmount.toString());
+	debugLog('open isolated baseAmount', baseAmount.toString());
 
 	const userStatsPk = getUserStatsAccountPublicKey(
 		driftClient.program.programId,
 		walletPk
 	);
 
-	console.log('walletPk: ', walletPk);
-	console.log('Mint: ', spotMarket.mint);
+	debugLog('open isolated walletPk', walletPk.toBase58());
+	debugLog('open isolated mint', spotMarket.mint.toBase58());
 	
 	const tokenProgram = driftClient.getTokenProgramForSpotMarket(spotMarket);
 	const userTokenAccount = await driftClient.getAssociatedTokenAccount(
@@ -556,7 +558,7 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 		walletPk
 	);
 
-	console.log('userTokenAccount: ', userTokenAccount);
+	debugLog('open isolated userTokenAccount', userTokenAccount.toBase58());
 
 	const userTokenAccountInfo = await connection.getAccountInfo(userTokenAccount);
 	const ensureTokenAccountIx =
@@ -571,58 +573,26 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 			: null;
 
 	const depositIx = await withAuthority(walletPk, async () => {
-		const remainingAccounts = driftClient.getRemainingAccounts({
-			userAccounts: userAccount ? [userAccount] : [],
-			writableSpotMarketIndexes: [spotMarketIndex],
-			readablePerpMarketIndex: marketConfig.marketIndex,
-		});
 		logInstruction(
 			'depositIntoIsolatedPerpPosition',
 			walletPk,
 			spotMarket.mint
 		);
-
-		return driftClient.program.instruction.depositIntoIsolatedPerpPosition(
-			spotMarketIndex,
-			marketConfig.marketIndex,
+		return driftClient.getDepositIntoIsolatedPerpPositionIx(
 			depositAmount,
-			{
-				accounts: {
-					state: await driftClient.getStatePublicKey(),
-					spotMarketVault: spotMarket.vault,
-					user: userPk,
-					userStats: userStatsPk,
-					userTokenAccount,
-					authority: walletPk,
-					tokenProgram: driftClient.getTokenProgramForSpotMarket(spotMarket),
-				},
-				remainingAccounts,
-			}
+			marketConfig.marketIndex,
+			userTokenAccount
 		);
 	});
 
 	const orderIx = await withAuthority(walletPk, async () => {
-	const orderParams = getMarketOrderParams({
-		marketIndex: marketConfig.marketIndex,
-		direction,
-		baseAssetAmount: baseAmount,
-		reduceOnly: false,
-	});
-
-		const remainingAccounts = driftClient.getRemainingAccounts({
-			userAccounts: userAccount ? [userAccount] : [],
-			readablePerpMarketIndex: marketConfig.marketIndex,
+		const orderParams = getMarketOrderParams({
+			marketIndex: marketConfig.marketIndex,
+			direction,
+			baseAssetAmount: baseAmount,
+			reduceOnly: false,
 		});
-
-		return driftClient.program.instruction.placePerpOrder(orderParams, {
-			accounts: {
-				state: await driftClient.getStatePublicKey(),
-				user: userPk,
-				userStats: userStatsPk,
-				authority: walletPk,
-			},
-			remainingAccounts,
-		});
+		return driftClient.getPlacePerpOrderIx(orderParams);
 	});
 
 	const oraclePrice = driftClient.getOracleDataForPerpMarket(
@@ -635,10 +605,10 @@ export async function buildOpenIsolatedTx(req: OpenIsolatedReq) {
 	};
 
 	const { txBase64, signatures } = await buildTransaction(walletPk, [
-		...((initIxs ?? []).filter((ix): ix is TransactionInstruction => typeof ix !== 'string')),
-		...(ensureTokenAccountIx && typeof ensureTokenAccountIx !== 'string' ? [ensureTokenAccountIx] : []),
-		...(typeof depositIx !== 'string' ? [depositIx] : []),
-		...(typeof orderIx !== 'string' ? [orderIx] : []),
+		...initIxs,
+		...(ensureTokenAccountIx ? [ensureTokenAccountIx] : []),
+		depositIx,
+		orderIx,
 	]);
 
 	return { txBase64, signatures, meta };
@@ -651,6 +621,11 @@ export async function buildClosePositionTx(req: ClosePositionReq) {
 	if (!userAccount) {
 		throw new Error('User account not found');
 	}
+	const perpMarket = driftClient.getPerpMarketAccount(
+		marketConfig.marketIndex
+	) as PerpMarketAccount;
+	const amm = perpMarket.amm as unknown as { basePrecision?: BN };
+	const basePrecision = amm.basePrecision ?? BASE_PRECISION;
 
 	const position = userAccount.perpPositions.find(
 		(pos) => pos.marketIndex === marketConfig.marketIndex
@@ -664,8 +639,8 @@ export async function buildClosePositionTx(req: ClosePositionReq) {
 	const targetSize =
 		req.size !== undefined
 			? BN.min(
-					toBasePrecision(Math.abs(req.size)),
-					bnAbs(position.baseAssetAmount)
+				toBasePrecision(Math.abs(req.size), basePrecision),
+				bnAbs(position.baseAssetAmount)
 			  )
 			: bnAbs(position.baseAssetAmount);
 
@@ -691,21 +666,7 @@ export async function buildClosePositionTx(req: ClosePositionReq) {
 			baseAssetAmount: targetSize,
 			reduceOnly: true,
 		});
-
-		const remainingAccounts = driftClient.getRemainingAccounts({
-			userAccounts: [userAccount],
-			readablePerpMarketIndex: marketConfig.marketIndex,
-		});
-
-		return driftClient.program.instruction.placePerpOrder(orderParams, {
-			accounts: {
-				state: await driftClient.getStatePublicKey(),
-				user: userPk,
-				userStats: userStatsPk,
-				authority: walletPk,
-			},
-			remainingAccounts,
-		});
+		return driftClient.getPlacePerpOrderIx(orderParams);
 	});
 
 	const { txBase64, signatures } = await buildTransaction(walletPk, [orderIx]);
@@ -743,25 +704,9 @@ export async function buildTransferIsolatedMarginTx(req: TransferMarginReq) {
 
 	if (req.delta >= 0) {
 		const transferIx = await withAuthority(walletPk, async () => {
-			const remainingAccounts = driftClient.getRemainingAccounts({
-				userAccounts: userAccount ? [userAccount] : [],
-				writableSpotMarketIndexes: [perpMarket.quoteSpotMarketIndex],
-				readablePerpMarketIndex: marketConfig.marketIndex,
-			});
-			return driftClient.program.instruction.transferIsolatedPerpPositionDeposit(
-				perpMarket.quoteSpotMarketIndex,
-				marketConfig.marketIndex,
+			return driftClient.getTransferIsolatedPerpPositionDepositIx(
 				amount,
-				{
-					accounts: {
-						state: await driftClient.getStatePublicKey(),
-						spotMarketVault: spotMarket.vault,
-						user: userPk,
-						userStats: userStatsPk,
-						authority: walletPk,
-					},
-					remainingAccounts,
-				}
+				marketConfig.marketIndex
 			);
 		});
 		instructions.push(transferIx);
@@ -900,7 +845,7 @@ export async function buildDepositNativeSolTx(req: DepositNativeReq) {
 
 	
 	const depositIx = await withAuthority(walletPk, async () => {
-		console.log('>>> user account: ', userAccount);
+		debugLog('depositNativeSol user account', userAccount ?? 'not-initialized');
 		logInstruction('depositNativeSol', walletPk, spotMarket.mint);
 		return driftClient.getDepositInstruction(
 			lamports,
@@ -936,7 +881,7 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 	try {
 		userHelper = instantiateUserHelper(walletPk, userAccount);
 	} catch (err) {
-		console.warn('position details: unable to init user helper', err);
+		debugLog('position details: unable to init user helper', err);
 	}
 
 	return userAccount.perpPositions
@@ -983,7 +928,7 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 						liquidationPrice = convertToNumber(liqBn, PRICE_PRECISION);
 					}
 				} catch (err) {
-					console.warn('position details: liq price error', err);
+				debugLog('position details: liq price error', err);
 				}
 			}
 
@@ -1086,7 +1031,7 @@ export async function getBalances(req: WalletOnlyReq) {
 			};
 		}
 	} catch (err) {
-		console.warn('fetch drift user balances failed', err);
+		debugLog('fetch drift user balances failed', err);
 	}
 
 	return {

@@ -14,6 +14,8 @@
 ./order-execution-service/pnpm-workspace.yaml
 ./order-execution-service/.env
 order-execution-service/.env
+# Worker logs
+order-execution-service/ipc-poc/ts-worker/logs/
 
 # Comprehensive node_modules ignore patterns
 **/node_modules/
