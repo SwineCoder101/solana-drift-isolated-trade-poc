@@ -970,12 +970,49 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 		debugLog('position details: unable to init user helper', err);
 	}
 
-	const positions = userAccount.perpPositions.filter(
-		(pos) => !pos.baseAssetAmount.eq(new BN(0))
+	// Include positions that have either:
+	// 1. Non-zero baseAssetAmount (open position), OR
+	// 2. Isolated margin deposited (even if position is closed)
+	const positions = await Promise.all(
+		userAccount.perpPositions.map(async (pos) => {
+			const hasPosition = !pos.baseAssetAmount.eq(new BN(0));
+			if (hasPosition) {
+				return { pos, hasIsolatedMargin: true };
+			}
+			
+			// Check if there's isolated margin even without an open position
+			const isolatedMargin = await withAuthority(walletPk, async () => {
+				return driftClient.getIsolatedPerpPositionTokenAmount(pos.marketIndex) ?? ZERO;
+			});
+			const hasIsolatedMargin = isolatedMargin.gt(ZERO);
+			
+			return { pos, hasIsolatedMargin };
+		})
 	);
 
+	// Filter to only positions with either open position or isolated margin
+	// Deduplicate by marketIndex, prioritizing positions with actual open positions
+	const marketMap = new Map<number, typeof positions[0]>();
+	for (const item of positions) {
+		const { pos, hasIsolatedMargin } = item;
+		const hasPosition = !pos.baseAssetAmount.eq(new BN(0));
+		const existing = marketMap.get(pos.marketIndex);
+		
+		// Skip if no position and no margin
+		if (!hasPosition && !hasIsolatedMargin) {
+			continue;
+		}
+		
+		// Add if market not seen, or replace if current has position and existing doesn't
+		if (!existing || (hasPosition && !existing.pos.baseAssetAmount.eq(new BN(0)))) {
+			marketMap.set(pos.marketIndex, item);
+		}
+	}
+	
+	const relevantPositions = Array.from(marketMap.values()).map(({ pos }) => pos);
+
 	return Promise.all(
-		positions.map(async (pos) => {
+		relevantPositions.map(async (pos) => {
 			const marketCfg = marketMaps?.byIndex.get(pos.marketIndex);
 			const perpMarket = driftClient.getPerpMarketAccount(
 				pos.marketIndex
@@ -983,12 +1020,70 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 			const oracle = driftClient.getOracleDataForPerpMarket(pos.marketIndex);
 
 			const size = convertToNumber(pos.baseAssetAmount, BASE_PRECISION);
-			const entryPriceBn = calculateEntryPrice(pos);
-			const entryPrice =
-				entryPriceBn.isZero() ?
-					null :
-					convertToNumber(entryPriceBn, PRICE_PRECISION);
 			const currentPrice = convertToNumber(oracle.price, PRICE_PRECISION);
+			
+			// Calculate entry price from position, or fallback to orders/oracle
+			let entryPrice: number | null = null;
+			const entryPriceBn = calculateEntryPrice(pos);
+			if (!entryPriceBn.isZero()) {
+				entryPrice = convertToNumber(entryPriceBn, PRICE_PRECISION);
+			} else {
+				// No position entry price, try to get from filled orders
+				const marketOrders = userAccount.orders.filter(
+					(order) => 
+						order.marketIndex === pos.marketIndex &&
+						isVariant(order.marketType, 'perp')
+				);
+				
+				// Look for filled orders and calculate average fill price
+				const filledOrders = marketOrders.filter((order) =>
+					isVariant(order.status, 'filled')
+				);
+				
+				if (filledOrders.length > 0) {
+					let totalQuoteFilled = new BN(0);
+					let totalBaseFilled = new BN(0);
+					
+					for (const order of filledOrders) {
+						if (order.quoteAssetAmountFilled.gt(ZERO) && order.baseAssetAmountFilled.gt(ZERO)) {
+							totalQuoteFilled = totalQuoteFilled.add(order.quoteAssetAmountFilled);
+							totalBaseFilled = totalBaseFilled.add(order.baseAssetAmountFilled);
+						}
+					}
+					
+					if (totalBaseFilled.gt(ZERO)) {
+						// Average fill price = total quote / total base
+						const avgFillPrice = totalQuoteFilled.mul(PRICE_PRECISION).div(totalBaseFilled);
+						entryPrice = convertToNumber(avgFillPrice, PRICE_PRECISION);
+					}
+				}
+				
+				// If still no entry price, check for pending limit orders
+				if (entryPrice === null) {
+					const openOrders = marketOrders.filter((order) =>
+						isVariant(order.status, 'open')
+					);
+					
+					// Use limit order price if available, otherwise use current oracle price
+					const limitOrder = openOrders.find((order) =>
+						isVariant(order.orderType, 'limit') && order.price.gt(ZERO)
+					);
+					
+					if (limitOrder) {
+						entryPrice = convertToNumber(limitOrder.price, PRICE_PRECISION);
+					} else if (openOrders.length > 0) {
+						// Market order pending, use current price as estimate
+						entryPrice = currentPrice;
+					} else {
+						// No orders found, but we're processing this position because it has isolated margin
+						// Use current price as estimate for entry price
+						// This handles cases where margin was deposited but orders haven't been placed yet
+						// or orders were placed but aren't in the userAccount yet
+						entryPrice = currentPrice;
+					}
+				}
+			}
+			
 			const pnl = calculatePositionPNL(perpMarket, pos, true, oracle);
 			const unrealizedPnl = convertToNumber(pnl, QUOTE_PRECISION);
 
@@ -1011,18 +1106,21 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 			let liquidationPrice: number | null = null;
 			if (userHelper) {
 				try {
-					const liqBn = userHelper.liquidationPrice(
-						pos.marketIndex,
-						undefined,
-						undefined,
-						'Maintenance',
-						false,
-						new BN(0),
-						false,
-						'Isolated'
-					);
-					if (liqBn && liqBn.gt(new BN(0))) {
-						liquidationPrice = convertToNumber(liqBn, PRICE_PRECISION);
+					// Only calculate liquidation price if there's an actual position
+					if (!pos.baseAssetAmount.eq(new BN(0))) {
+						const liqBn = userHelper.liquidationPrice(
+							pos.marketIndex,
+							undefined,
+							undefined,
+							'Maintenance',
+							false,
+							new BN(0),
+							false,
+							'Isolated'
+						);
+						if (liqBn && liqBn.gt(new BN(0))) {
+							liquidationPrice = convertToNumber(liqBn, PRICE_PRECISION);
+						}
 					}
 				} catch (err) {
 				debugLog('position details: liq price error', err);
