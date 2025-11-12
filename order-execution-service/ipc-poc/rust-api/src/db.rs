@@ -166,3 +166,70 @@ ON CONFLICT (signature, instruction_index) DO UPDATE SET
 
     Ok(total)
 }
+
+pub async fn fetch_actions(client: &Client, limit: i64) -> Result<Vec<ActionRecord>> {
+    let rows = client
+        .query(
+            r#"
+SELECT
+    signature,
+    instruction_index,
+    slot,
+    block_time,
+    action_type,
+    market_index,
+    perp_market_index,
+    spot_market_index,
+    direction,
+    base_asset_amount,
+    price,
+    reduce_only,
+    leverage,
+    amount,
+    token_account,
+    token_mint,
+    token_amount
+FROM drift_action_logs
+ORDER BY slot DESC
+LIMIT $1
+"#,
+            &[&limit],
+        )
+        .await
+        .context("failed to query drift_action_logs")?;
+
+    rows.into_iter()
+        .map(|row| {
+            let instruction_index: i32 = row.get("instruction_index");
+            let slot: i64 = row.get("slot");
+            Ok(ActionRecord {
+                signature: row.get("signature"),
+                instruction_index: usize::try_from(instruction_index)
+                    .context("instruction_index negative")?,
+                slot: u64::try_from(slot).context("slot negative")?,
+                block_time: row.get("block_time"),
+                action_type: row.get("action_type"),
+                market_index: row.get::<_, Option<i16>>("market_index").map(|v| v as u16),
+                perp_market_index: row
+                    .get::<_, Option<i16>>("perp_market_index")
+                    .map(|v| v as u16),
+                spot_market_index: row
+                    .get::<_, Option<i16>>("spot_market_index")
+                    .map(|v| v as u16),
+                direction: row.get::<_, Option<String>>("direction"),
+                base_asset_amount: row
+                    .get::<_, Option<i64>>("base_asset_amount")
+                    .map(|v| v as u64),
+                price: row.get::<_, Option<i64>>("price").map(|v| v as u64),
+                reduce_only: row.get("reduce_only"),
+                leverage: row.get("leverage"),
+                amount: row.get::<_, Option<i64>>("amount").map(|v| v as u64),
+                token_account: row.get::<_, Option<String>>("token_account"),
+                token_mint: row.get::<_, Option<String>>("token_mint"),
+                token_amount: row
+                    .get::<_, Option<i64>>("token_amount")
+                    .map(|v| v as u64),
+            })
+        })
+        .collect()
+}

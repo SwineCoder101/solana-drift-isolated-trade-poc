@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::{collections::HashMap, sync::Arc, time::Duration};
 
 use axum::{
 	extract::{OriginalUri, Path, Query, State},
@@ -66,6 +66,7 @@ pub fn router(state: AppState) -> Router {
 			post(deposit_token_execute),
 		)
 		.route("/actions/decode", post(decode_signature_route))
+		.route("/actions/history", get(get_admin_history))
 		.with_state(state)
 }
 
@@ -137,6 +138,29 @@ struct DecodeSignatureResponse {
 	signature: String,
 	rows_written: u64,
 	actions: Vec<ActionRecord>,
+}
+
+#[derive(Deserialize)]
+struct HistoryQuery {
+	limit: Option<i64>,
+}
+
+#[derive(Serialize)]
+struct HistoryEntry {
+	signature: String,
+	instruction_index: usize,
+	slot: u64,
+	block_time: Option<i64>,
+	action_type: String,
+	market_index: Option<u16>,
+	perp_market_index: Option<u16>,
+	spot_market_index: Option<u16>,
+	direction: Option<String>,
+	amount: Option<u64>,
+	token_account: Option<String>,
+	token_mint: Option<String>,
+	token_amount: Option<u64>,
+	leverage: Option<f64>,
 }
 
 async fn open_isolated(
@@ -271,6 +295,98 @@ async fn decode_signature_route(
 		rows_written,
 		actions,
 	}))
+}
+
+async fn get_admin_history(
+	State(state): State<AppState>,
+	Query(query): Query<HistoryQuery>,
+) -> Result<Json<Vec<HistoryEntry>>, ApiError> {
+	let limit = query
+		.limit
+		.unwrap_or(100)
+		.clamp(1, 1000);
+	let fetch_limit = (limit * 3) as i64;
+	let actions = db::fetch_actions(state.db.as_ref(), fetch_limit)
+		.await
+		.map_err(|err| {
+			error!(?err, limit, "failed to fetch action history");
+			ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, "database error")
+		})?;
+	let entries = coalesce_actions(actions, limit as usize);
+	Ok(Json(entries))
+}
+
+fn coalesce_actions(actions: Vec<ActionRecord>, limit: usize) -> Vec<HistoryEntry> {
+	let mut grouped: Vec<(String, Vec<ActionRecord>)> = Vec::new();
+	let mut index: HashMap<String, usize> = HashMap::new();
+	for action in actions {
+		if let Some(pos) = index.get(&action.signature) {
+			grouped[*pos].1.push(action);
+		} else {
+			let pos = grouped.len();
+			index.insert(action.signature.clone(), pos);
+			grouped.push((action.signature.clone(), vec![action]));
+		}
+		if grouped.len() >= limit * 3 {
+			break;
+		}
+	}
+
+	let mut entries = Vec::new();
+	for (signature, group) in grouped {
+		let entry = build_history_entry(signature, &group);
+		entries.push(entry);
+		if entries.len() >= limit {
+			break;
+		}
+	}
+	entries
+}
+
+fn build_history_entry(signature: String, group: &[ActionRecord]) -> HistoryEntry {
+	let order_action = group
+		.iter()
+		.find(|a| a.action_type == "placePerpOrder");
+	let movement_action = group.iter().find(|a| {
+		matches!(
+			a.action_type.as_str(),
+			"depositIntoIsolatedPerpPosition" | "withdrawFromIsolatedPerpPosition"
+		)
+	});
+
+	let primary = order_action.or(group.first()).expect("group not empty");
+	let amount = primary
+		.base_asset_amount
+		.or(primary.amount)
+		.or(movement_action.and_then(|a| a.amount));
+	let token_account = primary
+		.token_account
+		.clone()
+		.or_else(|| movement_action.and_then(|a| a.token_account.clone()));
+	let token_mint = primary
+		.token_mint
+		.clone()
+		.or_else(|| movement_action.and_then(|a| a.token_mint.clone()));
+	let token_amount = primary
+		.token_amount
+		.or(movement_action.and_then(|a| a.token_amount).or(movement_action.and_then(|a| a.amount)));
+
+	HistoryEntry {
+		signature,
+		instruction_index: primary.instruction_index,
+		slot: primary.slot,
+		block_time: primary.block_time,
+		action_type: primary.action_type.clone(),
+		market_index: primary.market_index,
+		perp_market_index: primary.perp_market_index,
+		spot_market_index: primary.spot_market_index,
+		direction: primary.direction.clone(),
+		amount,
+		token_account,
+		token_mint,
+		token_amount,
+		leverage: primary.leverage,
+	}
 }
 
 async fn transfer_margin(
