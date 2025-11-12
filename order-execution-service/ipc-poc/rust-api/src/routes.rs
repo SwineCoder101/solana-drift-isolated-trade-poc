@@ -235,9 +235,56 @@ async fn transfer_margin_execute(
 	OriginalUri(uri): OriginalUri,
 	Json(body): Json<TransferMarginRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/margin/transfer", &uri, serialize_payload(&body));
-	let value = transfer_margin_build(&state, &body).await?;
-	let executed = execute_transaction(&state, value).await?;
+	info!("[TRANSFER_MARGIN_EXECUTE] Starting transfer margin request");
+	log_request("/margin/transfer/execute", &uri, serialize_payload(&body));
+	
+	info!("[TRANSFER_MARGIN_EXECUTE] Building transfer margin transaction for wallet: {}, market: {}, delta: {}", 
+		body.wallet, body.market, body.delta);
+	
+	let value = match transfer_margin_build(&state, &body).await {
+		Ok(v) => {
+			let tx_preview = v.get("txBase64")
+				.and_then(|v| v.as_str())
+				.map(|s| {
+					let len = s.len();
+					if len > 50 {
+						format!("{}... ({} chars)", &s[..50], len)
+					} else {
+						s.to_string()
+					}
+				})
+				.unwrap_or_else(|| "N/A".to_string());
+			info!("[TRANSFER_MARGIN_EXECUTE] Successfully built transaction (preview: {})", tx_preview);
+			v
+		},
+		Err(e) => {
+			error!("[TRANSFER_MARGIN_EXECUTE] Failed to build transaction: {:?}", e);
+			return Err(e);
+		}
+	};
+	
+	info!("[TRANSFER_MARGIN_EXECUTE] Executing transaction");
+	let executed = match execute_transaction(&state, value).await {
+		Ok(result) => {
+			// Extract and log the transaction signature
+			let tx_signature = result
+				.get("txSignature")
+				.and_then(|v| v.as_str())
+				.map(|s| s.to_string())
+				.unwrap_or_else(|| "N/A".to_string());
+			
+			info!("[TRANSFER_MARGIN_EXECUTE] Transaction executed successfully");
+			info!("[TRANSFER_MARGIN_EXECUTE] Transaction signature: {}", tx_signature);
+			
+			result
+		},
+		Err(e) => {
+			error!("[TRANSFER_MARGIN_EXECUTE] Transaction execution failed: {:?}", e);
+			return Err(e);
+		}
+	};
+	
+	info!("[TRANSFER_MARGIN_EXECUTE] Transfer margin completed successfully");
 	Ok(Json(executed))
 }
 
@@ -257,9 +304,55 @@ async fn deposit_native_execute(
 	OriginalUri(uri): OriginalUri,
 	Json(body): Json<DepositNativeRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/margin/deposit-native", &uri, serialize_payload(&body));
-	let value = deposit_native_build(&state, &body).await?;
-	let executed = execute_transaction(&state, value).await?;
+	info!("[DEPOSIT_NATIVE_EXECUTE] Starting deposit native SOL request");
+	log_request("/margin/deposit-native/execute", &uri, serialize_payload(&body));
+	
+	info!("[DEPOSIT_NATIVE_EXECUTE] Building deposit native transaction for wallet: {}, amount: {}, market: {:?}", 
+		body.wallet, body.amount, body.market);
+	
+	let value = match deposit_native_build(&state, &body).await {
+		Ok(v) => {
+			let tx_preview = v.get("txBase64")
+				.and_then(|v| v.as_str())
+				.map(|s| {
+					let len = s.len();
+					if len > 50 {
+						format!("{}... ({} chars)", &s[..50], len)
+					} else {
+						s.to_string()
+					}
+				})
+				.unwrap_or_else(|| "N/A".to_string());
+			info!("[DEPOSIT_NATIVE_EXECUTE] Successfully built transaction (preview: {})", tx_preview);
+			v
+		},
+		Err(e) => {
+			error!("[DEPOSIT_NATIVE_EXECUTE] Failed to build transaction: {:?}", e);
+			return Err(e);
+		}
+	};
+	
+	info!("[DEPOSIT_NATIVE_EXECUTE] Executing transaction");
+	let executed = match execute_transaction(&state, value).await {
+		Ok(result) => {
+			let tx_signature = result
+				.get("txSignature")
+				.and_then(|v| v.as_str())
+				.map(|s| s.to_string())
+				.unwrap_or_else(|| "N/A".to_string());
+			
+			info!("[DEPOSIT_NATIVE_EXECUTE] Transaction executed successfully");
+			info!("[DEPOSIT_NATIVE_EXECUTE] Transaction signature: {}", tx_signature);
+			
+			result
+		},
+		Err(e) => {
+			error!("[DEPOSIT_NATIVE_EXECUTE] Transaction execution failed: {:?}", e);
+			return Err(e);
+		}
+	};
+	
+	info!("[DEPOSIT_NATIVE_EXECUTE] Deposit native completed successfully");
 	Ok(Json(executed))
 }
 
@@ -279,9 +372,55 @@ async fn deposit_token_execute(
 	OriginalUri(uri): OriginalUri,
 	Json(body): Json<DepositTokenRequest>,
 ) -> Result<Json<Value>, ApiError> {
-	log_request("/margin/deposit-token", &uri, serialize_payload(&body));
-	let value = deposit_token_build(&state, &body).await?;
-	let executed = execute_transaction(&state, value).await?;
+	info!("[DEPOSIT_TOKEN_EXECUTE] Starting deposit token request");
+	log_request("/margin/deposit-token/execute", &uri, serialize_payload(&body));
+	
+	info!("[DEPOSIT_TOKEN_EXECUTE] Building deposit token transaction for wallet: {}, amount: {}, market: {:?}", 
+		body.wallet, body.amount, body.market);
+	
+	let value = match deposit_token_build(&state, &body).await {
+		Ok(v) => {
+			let tx_preview = v.get("txBase64")
+				.and_then(|v| v.as_str())
+				.map(|s| {
+					let len = s.len();
+					if len > 50 {
+						format!("{}... ({} chars)", &s[..50], len)
+					} else {
+						s.to_string()
+					}
+				})
+				.unwrap_or_else(|| "N/A".to_string());
+			info!("[DEPOSIT_TOKEN_EXECUTE] Successfully built transaction (preview: {})", tx_preview);
+			v
+		},
+		Err(e) => {
+			error!("[DEPOSIT_TOKEN_EXECUTE] Failed to build transaction: {:?}", e);
+			return Err(e);
+		}
+	};
+	
+	info!("[DEPOSIT_TOKEN_EXECUTE] Executing transaction");
+	let executed = match execute_transaction(&state, value).await {
+		Ok(result) => {
+			let tx_signature = result
+				.get("txSignature")
+				.and_then(|v| v.as_str())
+				.map(|s| s.to_string())
+				.unwrap_or_else(|| "N/A".to_string());
+			
+			info!("[DEPOSIT_TOKEN_EXECUTE] Transaction executed successfully");
+			info!("[DEPOSIT_TOKEN_EXECUTE] Transaction signature: {}", tx_signature);
+			
+			result
+		},
+		Err(e) => {
+			error!("[DEPOSIT_TOKEN_EXECUTE] Transaction execution failed: {:?}", e);
+			return Err(e);
+		}
+	};
+	
+	info!("[DEPOSIT_TOKEN_EXECUTE] Deposit token completed successfully");
 	Ok(Json(executed))
 }
 
@@ -367,58 +506,118 @@ async fn transfer_margin_build(
 	state: &AppState,
 	body: &TransferMarginRequest,
 ) -> Result<Value, ApiError> {
+	debug!("[TRANSFER_MARGIN_BUILD] Starting build for wallet: {}, market: {}, delta: {}", 
+		body.wallet, body.market, body.delta);
+	
 	validate_wallet(&body.wallet)?;
+	
 	if !body.delta.is_finite() || body.delta == 0.0 {
+		warn!("[TRANSFER_MARGIN_BUILD] Invalid delta provided: {}", body.delta);
 		return Err(ApiError::new(
 			StatusCode::BAD_REQUEST,
 			"delta must be a non-zero number",
 		));
 	}
 
+	let operation = if body.delta > 0.0 {
+		"deposit"
+	} else {
+		"withdraw"
+	};
+	info!("[TRANSFER_MARGIN_BUILD] Transfer operation: {} (delta: {})", operation, body.delta);
+
 	let args = json!({
 		"wallet": body.wallet,
 		"market": body.market,
 		"delta": body.delta,
 	});
-	call_worker(state, "transferMargin", args, WORKER_TIMEOUT).await
+	
+	debug!("[TRANSFER_MARGIN_BUILD] Calling worker with args: {:?}", args);
+	
+	match call_worker(state, "transferMargin", args, WORKER_TIMEOUT).await {
+		Ok(result) => {
+			debug!("[TRANSFER_MARGIN_BUILD] Worker returned successfully");
+			Ok(result)
+		},
+		Err(e) => {
+			error!("[TRANSFER_MARGIN_BUILD] Worker call failed: {:?}", e);
+			Err(e)
+		}
+	}
 }
 
 async fn deposit_native_build(
 	state: &AppState,
 	body: &DepositNativeRequest,
 ) -> Result<Value, ApiError> {
+	debug!("[DEPOSIT_NATIVE_BUILD] Starting build for wallet: {}, amount: {}, market: {:?}", 
+		body.wallet, body.amount, body.market);
+	
 	validate_wallet(&body.wallet)?;
+	
 	if !body.amount.is_finite() || body.amount <= 0.0 {
+		warn!("[DEPOSIT_NATIVE_BUILD] Invalid amount provided: {}", body.amount);
 		return Err(ApiError::new(
 			StatusCode::BAD_REQUEST,
 			"amount must be positive",
 		));
 	}
+
 	let args = json!({
 		"wallet": body.wallet,
 		"amount": body.amount,
 		"market": body.market,
 	});
-	call_worker(state, "depositNativeSol", args, WORKER_TIMEOUT).await
+	
+	debug!("[DEPOSIT_NATIVE_BUILD] Calling worker with args: {:?}", args);
+	
+	match call_worker(state, "depositNativeSol", args, WORKER_TIMEOUT).await {
+		Ok(result) => {
+			debug!("[DEPOSIT_NATIVE_BUILD] Worker returned successfully");
+			Ok(result)
+		},
+		Err(e) => {
+			error!("[DEPOSIT_NATIVE_BUILD] Worker call failed: {:?}", e);
+			Err(e)
+		}
+	}
 }
 
 async fn deposit_token_build(
 	state: &AppState,
 	body: &DepositTokenRequest,
 ) -> Result<Value, ApiError> {
+	debug!("[DEPOSIT_TOKEN_BUILD] Starting build for wallet: {}, amount: {}, market: {:?}", 
+		body.wallet, body.amount, body.market);
+	
 	validate_wallet(&body.wallet)?;
+	
 	if !body.amount.is_finite() || body.amount <= 0.0 {
+		warn!("[DEPOSIT_TOKEN_BUILD] Invalid amount provided: {}", body.amount);
 		return Err(ApiError::new(
 			StatusCode::BAD_REQUEST,
 			"amount must be positive",
 		));
 	}
+
 	let args = json!({
 		"wallet": body.wallet,
 		"amount": body.amount,
 		"market": body.market,
 	});
-	call_worker(state, "depositToken", args, WORKER_TIMEOUT).await
+	
+	debug!("[DEPOSIT_TOKEN_BUILD] Calling worker with args: {:?}", args);
+	
+	match call_worker(state, "depositToken", args, WORKER_TIMEOUT).await {
+		Ok(result) => {
+			debug!("[DEPOSIT_TOKEN_BUILD] Worker returned successfully");
+			Ok(result)
+		},
+		Err(e) => {
+			error!("[DEPOSIT_TOKEN_BUILD] Worker call failed: {:?}", e);
+			Err(e)
+		}
+	}
 }
 
 async fn get_positions(

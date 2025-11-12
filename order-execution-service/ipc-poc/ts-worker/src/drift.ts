@@ -756,18 +756,91 @@ export async function buildClosePositionTx(req: ClosePositionReq) {
 		throw new Error('Close size resolves to zero');
 	}
 
+	const userPk = getUserAccountPublicKeySync(
+		driftClient.program.programId,
+		walletPk,
+		0
+	);
+
+	// 1) Close the perp position with a reduce-only order using placeAndTake
+	// This attempts to fill the order immediately in the same transaction by matching with makers/AMM
+	const orderParams = getMarketOrderParams({
+		marketIndex: marketConfig.marketIndex,
+		marketType: { perp: {} },
+		direction,
+		baseAssetAmount: targetSize,
+		reduceOnly: true,
+	});
+
 	const orderIx = await withAuthority(walletPk, async () => {
-		const orderParams = getMarketOrderParams({
-			marketIndex: marketConfig.marketIndex,
-			marketType: { perp: {} },
-			direction,
-			baseAssetAmount: targetSize,
-			reduceOnly: true,
-		});
-		return driftClient.getPlacePerpOrderIx(orderParams);
+		// Use placeAndTake to attempt immediate fill (matches with makers/AMM in same transaction)
+		// Pass undefined for makerInfo to let it find makers automatically
+		return driftClient.getPlaceAndTakePerpOrderIx(
+			orderParams,
+			undefined, // makerInfo - undefined means auto-find makers
+			undefined, // referrerInfo
+			undefined, // successCondition
+			undefined, // auctionDurationPercentage
+			0 // subAccountId
+		);
 	});
 
 	const instructions: TransactionInstruction[] = [orderIx];
+
+	// 2) Optional: Settle PnL after closing
+	// Note: This might fail if there's no PnL to settle, but it's safe to include
+	try {
+		const settlePnlIx = await withAuthority(walletPk, async () => {
+			return driftClient.settlePNLIx(
+				userPk,
+				userAccount,
+				marketConfig.marketIndex
+			);
+		});
+		instructions.push(settlePnlIx);
+	} catch (err) {
+		// If settle PnL fails (e.g., no PnL to settle), continue without it
+		debugLog('Could not add settle PnL instruction:', err);
+	}
+
+	// 3) If closing full position and there's isolated margin, try to withdraw it
+	// With placeAndTake, the order should fill immediately, so we can attempt withdrawal
+	const isClosingFullPosition = req.size === undefined || 
+		targetSize.eq(bnAbs(position!.baseAssetAmount));
+	
+	if (isClosingFullPosition && hasIsolatedMargin) {
+		const spotMarket = driftClient.getSpotMarketAccount(
+			perpMarket.quoteSpotMarketIndex
+		) as SpotMarketAccount;
+		
+		try {
+			const withdrawIxs = await withAuthority(walletPk, async () => {
+				// Get the isolated margin amount directly from getIsolatedPerpPositionTokenAmount
+				// This is the source of truth for what's actually available to withdraw
+				const availableMargin = driftClient.getIsolatedPerpPositionTokenAmount(
+					marketConfig.marketIndex
+				) ?? ZERO;
+				
+				if (availableMargin.lte(ZERO)) {
+					throw new Error('No isolated margin available to withdraw');
+				}
+				
+				// Only withdraw what's actually available in getIsolatedPerpPositionTokenAmount
+				// This ensures we don't withdraw more than what's collateralized
+				return driftClient.getWithdrawFromIsolatedPerpPositionIxsBundle(
+					availableMargin,
+					marketConfig.marketIndex,
+					0,
+					findAssociatedTokenAddress(walletPk, spotMarket.mint)
+				);
+			});
+			instructions.push(...withdrawIxs);
+		} catch (err) {
+			// If withdraw fails (e.g., order didn't fill completely), continue without it
+			// User will need to withdraw in a separate transaction
+			debugLog('Could not add withdraw instruction (order may not have filled):', err);
+		}
+	}
 
 	const { txBase64, signatures } = await buildTransaction(walletPk, instructions);
 	return { txBase64, signatures };
@@ -793,10 +866,64 @@ export async function buildTransferIsolatedMarginTx(req: TransferMarginReq) {
 	);
 
 	const userAccount = await fetchUserAccount(walletPk);
+	if (!userAccount) {
+		throw new Error('User account not found');
+	}
+
+	// Ensure user is cached so methods like getTransferIsolatedPerpPositionDepositIx work
+	await ensureDriftUserCached(walletPk, userAccount);
 
 	const amount = toQuotePrecision(Math.abs(req.delta));
 	if (amount.isZero()) {
 		throw new Error('Delta resolves to zero');
+	}
+
+	// If withdrawing, check available isolated margin and position requirements
+	if (req.delta < 0) {
+		const totalMargin = await withAuthority(walletPk, async () => {
+			return driftClient.getIsolatedPerpPositionTokenAmount(
+				marketConfig.marketIndex
+			) ?? ZERO;
+		});
+
+		// Check if there's an open position that requires margin to remain
+		const position = userAccount.perpPositions.find(
+			(pos) => pos.marketIndex === marketConfig.marketIndex
+		);
+		const hasOpenPosition = position && !position.baseAssetAmount.eq(new BN(0));
+
+		let withdrawableMargin = totalMargin;
+		let errorMessage = '';
+
+		if (hasOpenPosition) {
+			// When there's an open position, the position's isolated margin must remain
+			// The position's isolatedPositionScaledBalance is the margin allocated to the position
+			const positionMargin = position!.isolatedPositionScaledBalance ?? ZERO;
+			withdrawableMargin = totalMargin.sub(positionMargin);
+
+			if (withdrawableMargin.lt(ZERO)) {
+				withdrawableMargin = ZERO;
+			}
+
+			if (amount.gt(withdrawableMargin)) {
+				const totalAmount = convertToNumber(totalMargin, QUOTE_PRECISION);
+				const positionAmount = convertToNumber(positionMargin, QUOTE_PRECISION);
+				const withdrawableAmount = convertToNumber(withdrawableMargin, QUOTE_PRECISION);
+				const requestedAmount = Math.abs(req.delta);
+				errorMessage = `Cannot withdraw while position is open. Total margin: ${totalAmount.toFixed(4)}, Position requires: ${positionAmount.toFixed(4)}, Withdrawable: ${withdrawableAmount.toFixed(4)}, Requested: ${requestedAmount.toFixed(4)}. Close the position first to withdraw all margin.`;
+			}
+		} else {
+			// No open position, can withdraw all available margin
+			if (totalMargin.lt(amount)) {
+				const availableAmount = convertToNumber(totalMargin, QUOTE_PRECISION);
+				const requestedAmount = Math.abs(req.delta);
+				errorMessage = `Insufficient isolated margin. Available: ${availableAmount.toFixed(4)}, Requested: ${requestedAmount.toFixed(4)}`;
+			}
+		}
+
+		if (errorMessage) {
+			throw new Error(errorMessage);
+		}
 	}
 
 	const initIxs = await ensureUserInitIxs(walletPk);
