@@ -8,18 +8,14 @@ use tokio_postgres::{types::ToSql, Client, Config};
 use crate::decoder::ActionRecord;
 
 pub async fn connect(database_url: &str) -> Result<(Arc<Client>, tokio::task::JoinHandle<()>)> {
-    let config: Config = database_url
-        .parse()
-        .context("invalid DATABASE_URL")?;
+    let config: Config = database_url.parse().context("invalid DATABASE_URL")?;
 
     let mut builder = TlsConnector::builder();
     if accept_invalid_certs() {
         builder.danger_accept_invalid_certs(true);
         builder.danger_accept_invalid_hostnames(true);
     }
-    let connector = builder
-        .build()
-        .context("failed to build TLS connector")?;
+    let connector = builder.build().context("failed to build TLS connector")?;
     let tls = MakeTlsConnector::new(connector);
     let (client, connection) = config
         .connect(tls)
@@ -226,9 +222,7 @@ LIMIT $1
                 amount: row.get::<_, Option<i64>>("amount").map(|v| v as u64),
                 token_account: row.get::<_, Option<String>>("token_account"),
                 token_mint: row.get::<_, Option<String>>("token_mint"),
-                token_amount: row
-                    .get::<_, Option<i64>>("token_amount")
-                    .map(|v| v as u64),
+                token_amount: row.get::<_, Option<i64>>("token_amount").map(|v| v as u64),
             })
         })
         .collect()

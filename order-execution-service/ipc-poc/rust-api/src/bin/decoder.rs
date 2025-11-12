@@ -19,9 +19,15 @@ fn main() -> Result<()> {
     std::fs::create_dir_all(dump_root)?;
 
     let signatures = [
-        ("withdrawFromIsolatedPerpPosition", WITHDRAW_FROM_ISOLATED_PERP_POSITION_SIGNATURE),
+        (
+            "withdrawFromIsolatedPerpPosition",
+            WITHDRAW_FROM_ISOLATED_PERP_POSITION_SIGNATURE,
+        ),
         ("placePerpOrder", PLACE_PERP_ORDER_SIGNATURE),
-        ("depositIntoIsolatedPerpPosition", DEPOSIT_INTO_ISOLATED_PERP_POSITION_SIGNATURE),
+        (
+            "depositIntoIsolatedPerpPosition",
+            DEPOSIT_INTO_ISOLATED_PERP_POSITION_SIGNATURE,
+        ),
     ];
 
     let mut action_rows: Vec<ActionRecord> = Vec::new();
@@ -62,15 +68,7 @@ fn print_dump_summary(dump: &SignatureDump) {
         println!("  Block time (unix): {ts}");
     }
     for instr in &dump.instructions {
-        let label = instr
-            .kind
-            .as_deref()
-            .unwrap_or("unknown Drift instruction");
-        println!(
-            "  ix {}: {} ({} bytes)",
-            instr.index,
-            label,
-            instr.data_len
-        );
+        let label = instr.kind.as_deref().unwrap_or("unknown Drift instruction");
+        println!("  ix {}: {} ({} bytes)", instr.index, label, instr.data_len);
     }
 }

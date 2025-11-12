@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
-import { FormEvent, useCallback, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 
 import { BalancesCard } from '../components/BalancesCard';
@@ -52,8 +52,32 @@ function HomePage() {
     resolvedWallet,
   );
 
-  const addHistory = useCallback((entry: any) => {
-    setTradeHistory((prev) => [{ ts: Date.now(), ...entry }, ...prev.slice(0, 49)]);
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch(`${ORDER_EXECUTION_URL}/actions/history?limit=50`);
+        if (!res.ok) {
+          throw new Error('Failed to load trade history');
+        }
+        const data: HistoryEntry[] = await res.json();
+        setTradeHistory(data);
+      } catch (err) {
+        console.error('Failed to fetch trade history', err);
+      }
+    };
+    void fetchHistory();
+  }, []);
+
+  const addHistory = useCallback((entry: Partial<HistoryEntry>) => {
+    setTradeHistory((prev) => [{
+      signature: entry.signature ?? crypto.randomUUID(),
+      slot: entry.slot ?? Date.now(),
+      block_time: entry.block_time ?? Math.floor(Date.now() / 1000),
+      action_type: entry.action_type ?? 'order',
+      direction: entry.direction,
+      amount: entry.amount,
+      token_amount: entry.token_amount,
+    }, ...prev.slice(0, 49)]);
   }, []);
 
   const handleSubmit = async (event: FormEvent) => {
@@ -98,7 +122,6 @@ function HomePage() {
       setStatus(`Order submitted: ${payload.txSignature ?? 'pending signature'}`);
       await refreshPositions();
       await refreshBalances();
-      addHistory({ action: 'open', market: asset, amount: parsedAmount, side });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unexpected error';
       setStatus(message);
@@ -127,7 +150,6 @@ function HomePage() {
       setStatus(`Close submitted: ${payload.txSignature ?? 'pending signature'}`);
       await refreshPositions();
       await refreshBalances();
-      addHistory({ action: 'close', market });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Close failed';
       setStatus(message);
@@ -162,7 +184,7 @@ function HomePage() {
       setStatus(`Withdraw submitted: ${payload.txSignature ?? 'pending signature'}`);
       await refreshPositions();
       await refreshBalances();
-      addHistory({ action: 'withdraw', market, amount: amt });
+      addHistory({ action_type: 'withdraw', amount: amt });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Withdraw failed';
       setStatus(message);
@@ -197,7 +219,7 @@ function HomePage() {
       setStatus(`Margin deposited: ${payload.txSignature ?? 'signature unavailable'}`);
       await refreshPositions();
       await refreshBalances();
-      addHistory({ action: 'deposit', market, amount: amt });
+      addHistory({ action_type: 'deposit', amount: amt });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Deposit failed';
       setStatus(message);

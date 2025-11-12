@@ -1,11 +1,4 @@
-use std::{
-	collections::HashMap,
-	env,
-	fmt,
-	str::FromStr,
-	sync::Arc,
-	time::Duration,
-};
+use std::{collections::HashMap, env, fmt, str::FromStr, sync::Arc, time::Duration};
 
 use anyhow::{bail, Context, Result};
 use base64::prelude::*;
@@ -18,18 +11,12 @@ use sha2::{Digest, Sha256};
 use solana_client::{rpc_client::RpcClient, rpc_config::RpcTransactionConfig};
 use solana_rpc_client::{http_sender::HttpSender, rpc_client::RpcClientConfig};
 use solana_sdk::{
-    commitment_config::CommitmentConfig,
-    instruction::CompiledInstruction,
-    message::VersionedMessage,
-    pubkey::Pubkey,
-    signature::Signature,
+    commitment_config::CommitmentConfig, instruction::CompiledInstruction,
+    message::VersionedMessage, pubkey::Pubkey, signature::Signature,
 };
 use solana_transaction_status::{
-    option_serializer::OptionSerializer,
-    UiLoadedAddresses,
-    UiTransactionEncoding,
-    UiTransactionStatusMeta,
-    UiTransactionTokenBalance,
+    option_serializer::OptionSerializer, UiLoadedAddresses, UiTransactionEncoding,
+    UiTransactionStatusMeta, UiTransactionTokenBalance,
 };
 
 const DEFAULT_DRIFT_PROGRAM: &str = "dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH";
@@ -43,27 +30,27 @@ static PLACE_PERP_ORDER_DISC: Lazy<[u8; 8]> =
 
 #[derive(Clone)]
 pub struct DriftDecoder {
-	client: Arc<RpcClient>,
-	drift_program: Pubkey,
+    client: Arc<RpcClient>,
+    drift_program: Pubkey,
 }
 
 impl DriftDecoder {
     pub fn from_env() -> Result<Self> {
-        let rpc_url = env::var("RPC_URL")
-            .unwrap_or_else(|_| "https://api.devnet.solana.com".to_string());
-        let drift_program = env::var("DRIFT_PROGRAM_ID")
-            .unwrap_or_else(|_| DEFAULT_DRIFT_PROGRAM.to_string());
+        let rpc_url =
+            env::var("RPC_URL").unwrap_or_else(|_| "https://api.devnet.solana.com".to_string());
+        let drift_program =
+            env::var("DRIFT_PROGRAM_ID").unwrap_or_else(|_| DEFAULT_DRIFT_PROGRAM.to_string());
         let drift_program = Pubkey::from_str(&drift_program).context("invalid DRIFT_PROGRAM_ID")?;
         Self::new(rpc_url, drift_program)
     }
 
-	pub fn new(rpc_url: impl Into<String>, drift_program: Pubkey) -> Result<Self> {
-		let client = build_rpc_client(rpc_url.into(), CommitmentConfig::confirmed())?;
-		Ok(Self {
-			client: Arc::new(client),
-			drift_program,
-		})
-	}
+    pub fn new(rpc_url: impl Into<String>, drift_program: Pubkey) -> Result<Self> {
+        let client = build_rpc_client(rpc_url.into(), CommitmentConfig::confirmed())?;
+        Ok(Self {
+            client: Arc::new(client),
+            drift_program,
+        })
+    }
 
     pub fn decode_signature(&self, sig_str: &str) -> Result<(SignatureDump, Vec<ActionRecord>)> {
         let signature = Signature::from_str(sig_str).context("invalid signature")?;
@@ -73,10 +60,10 @@ impl DriftDecoder {
             max_supported_transaction_version: Some(0),
         };
 
-	let tx = self
-		.client
- 		.get_transaction_with_config(&signature, config)
-		.with_context(|| format!("fetching transaction {sig_str}"))?;
+        let tx = self
+            .client
+            .get_transaction_with_config(&signature, config)
+            .with_context(|| format!("fetching transaction {sig_str}"))?;
 
         let meta = tx
             .transaction
@@ -106,20 +93,18 @@ impl DriftDecoder {
 
             drift_ix_found = true;
 
-		let decode_result = match decode_drift_instruction(&ix.data) {
-			Ok(res) => res,
-			Err(err) => {
-				tracing::error!(?err, signature = %sig_str, ix_idx, "decode error");
-				None
-			}
-		};
+            let decode_result = match decode_drift_instruction(&ix.data) {
+                Ok(res) => res,
+                Err(err) => {
+                    tracing::error!(?err, signature = %sig_str, ix_idx, "decode error");
+                    None
+                }
+            };
 
             let kind_label = decode_result
                 .as_ref()
                 .map(|decoded| decoded.kind.to_string());
-            let args_value = decode_result
-                .as_ref()
-                .map(|decoded| decoded.args.clone());
+            let args_value = decode_result.as_ref().map(|decoded| decoded.args.clone());
 
             let accounts = collect_account_dump(message, ix, &account_keys, kind_label.as_deref())?;
             if let Some(decoded) = decode_result.as_ref() {
@@ -148,9 +133,9 @@ impl DriftDecoder {
             });
         }
 
-	if !drift_ix_found {
-		tracing::warn!(signature = %sig_str, "no drift instructions");
-	}
+        if !drift_ix_found {
+            tracing::warn!(signature = %sig_str, "no drift instructions");
+        }
 
         Ok((
             SignatureDump {
@@ -186,7 +171,8 @@ fn collect_account_keys(
 ) -> Result<Vec<Pubkey>> {
     let mut keys = message.static_account_keys().to_vec();
     if let Some(meta) = meta {
-        if let OptionSerializer::Some(UiLoadedAddresses { writable, readonly }) = &meta.loaded_addresses
+        if let OptionSerializer::Some(UiLoadedAddresses { writable, readonly }) =
+            &meta.loaded_addresses
         {
             for key_str in writable.iter().chain(readonly.iter()) {
                 let key = Pubkey::from_str(key_str)
@@ -437,10 +423,12 @@ impl DriftIxKind {
 impl fmt::Display for DriftIxKind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            DriftIxKind::DepositIntoIsolatedPerpPosition =>
-                write!(f, "depositIntoIsolatedPerpPosition"),
-            DriftIxKind::WithdrawFromIsolatedPerpPosition =>
-                write!(f, "withdrawFromIsolatedPerpPosition"),
+            DriftIxKind::DepositIntoIsolatedPerpPosition => {
+                write!(f, "depositIntoIsolatedPerpPosition")
+            }
+            DriftIxKind::WithdrawFromIsolatedPerpPosition => {
+                write!(f, "withdrawFromIsolatedPerpPosition")
+            }
             DriftIxKind::PlacePerpOrder => write!(f, "placePerpOrder"),
         }
     }
@@ -597,7 +585,16 @@ fn build_action_record(
     token_lookup: &HashMap<usize, String>,
 ) -> Result<Option<ActionRecord>> {
     let action_type = decoded.kind.to_string();
-    let base_record = |market_index: Option<u16>, perp_market_index: Option<u16>, spot_market_index: Option<u16>, direction: Option<String>, base_asset_amount: Option<u64>, price: Option<u64>, reduce_only: Option<bool>, amount: Option<u64>, token_account: Option<String>, token_mint: Option<String>| {
+    let base_record = |market_index: Option<u16>,
+                       perp_market_index: Option<u16>,
+                       spot_market_index: Option<u16>,
+                       direction: Option<String>,
+                       base_asset_amount: Option<u64>,
+                       price: Option<u64>,
+                       reduce_only: Option<bool>,
+                       amount: Option<u64>,
+                       token_account: Option<String>,
+                       token_mint: Option<String>| {
         ActionRecord {
             signature: signature.to_string(),
             slot,
@@ -642,28 +639,26 @@ fn build_action_record(
                 token_mint,
             )
         }
-        DriftDecodedDetails::PlacePerpOrder(params) => {
-            base_record(
-                Some(params.market_index),
-                if matches!(params.market_type, MarketType::Perp) {
-                    Some(params.market_index)
-                } else {
-                    None
-                },
-                if matches!(params.market_type, MarketType::Spot) {
-                    Some(params.market_index)
-                } else {
-                    None
-                },
-                Some(params.direction.as_str().to_string()),
-                Some(params.base_asset_amount),
-                Some(params.price),
-                Some(params.reduce_only),
-                None,
-                None,
-                None,
-            )
-        }
+        DriftDecodedDetails::PlacePerpOrder(params) => base_record(
+            Some(params.market_index),
+            if matches!(params.market_type, MarketType::Perp) {
+                Some(params.market_index)
+            } else {
+                None
+            },
+            if matches!(params.market_type, MarketType::Spot) {
+                Some(params.market_index)
+            } else {
+                None
+            },
+            Some(params.direction.as_str().to_string()),
+            Some(params.base_asset_amount),
+            Some(params.price),
+            Some(params.reduce_only),
+            None,
+            None,
+            None,
+        ),
     };
 
     Ok(Some(record))

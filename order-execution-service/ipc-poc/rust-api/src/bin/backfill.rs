@@ -5,11 +5,7 @@ use dotenvy::dotenv;
 use rust_api::{db, decoder::DriftDecoder};
 use solana_client::rpc_client::RpcClient;
 use solana_rpc_client::rpc_client::GetConfirmedSignaturesForAddress2Config;
-use solana_sdk::{
-	commitment_config::CommitmentConfig,
-	pubkey::Pubkey,
-	signature::Signature,
-};
+use solana_sdk::{commitment_config::CommitmentConfig, pubkey::Pubkey, signature::Signature};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -61,14 +57,14 @@ async fn main() -> Result<()> {
 }
 
 fn fetch_signatures(client: &RpcClient, wallet: &Pubkey, max: usize) -> Result<Vec<String>> {
-	let mut before: Option<Signature> = None;
+    let mut before: Option<Signature> = None;
     let mut signatures = Vec::new();
     let mut seen = HashSet::new();
 
     while signatures.len() < max {
         let remaining = max - signatures.len();
-		let config = GetConfirmedSignaturesForAddress2Config {
-			before: before.clone(),
+        let config = GetConfirmedSignaturesForAddress2Config {
+            before: before.clone(),
             until: None,
             limit: Some(remaining.min(1000)),
             commitment: Some(CommitmentConfig::confirmed()),
@@ -80,9 +76,9 @@ fn fetch_signatures(client: &RpcClient, wallet: &Pubkey, max: usize) -> Result<V
         if batch.is_empty() {
             break;
         }
-		before = batch
-			.last()
-			.and_then(|entry| Signature::from_str(&entry.signature).ok());
+        before = batch
+            .last()
+            .and_then(|entry| Signature::from_str(&entry.signature).ok());
         for entry in batch {
             if seen.insert(entry.signature.clone()) {
                 signatures.push(entry.signature);
