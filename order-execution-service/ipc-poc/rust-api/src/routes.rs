@@ -9,10 +9,11 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use sqlx::PgPool;
+use tokio_postgres::Client;
 use tracing::{debug, error, info, warn};
 
 use crate::{
+	db,
 	decoder::{ActionRecord, DriftDecoder},
 	ipc::{IpcError, TsIpc},
 	types::{
@@ -26,7 +27,7 @@ use crate::{
 pub struct AppState {
 	pub ipc: TsIpc,
 	pub executor: Arc<crate::executor::TxExecutor>,
-	pub db: PgPool,
+	pub db: Arc<Client>,
 	pub decoder: Arc<DriftDecoder>,
 }
 
@@ -103,121 +104,6 @@ fn map_ipc_error(err: IpcError) -> ApiError {
 	}
 }
 
-async fn persist_actions(pool: &PgPool, actions: &[ActionRecord]) -> Result<u64, ApiError> {
-	if actions.is_empty() {
-		return Ok(0);
-	}
-
-	let mut tx = pool.begin().await.map_err(map_db_error)?;
-	let mut rows = 0u64;
-	for action in actions {
-		let slot = to_i64("slot", action.slot)?;
-		let instruction_index = usize_to_i32("instruction_index", action.instruction_index)?;
-		let base_asset_amount = opt_u64_to_i64("base_asset_amount", action.base_asset_amount)?;
-		let price = opt_u64_to_i64("price", action.price)?;
-		let amount = opt_u64_to_i64("amount", action.amount)?;
-		let token_amount = opt_u64_to_i64("token_amount", action.token_amount)?;
-		let direction = action.direction.clone();
-		let token_account = action.token_account.clone();
-		let token_mint = action.token_mint.clone();
-
-		let result = sqlx::query(
-			r#"
-			INSERT INTO drift_action_logs (
-				signature,
-				instruction_index,
-				slot,
-				block_time,
-				action_type,
-				market_index,
-				perp_market_index,
-				spot_market_index,
-				direction,
-				base_asset_amount,
-				price,
-				reduce_only,
-				leverage,
-				amount,
-				token_account,
-				token_mint,
-				token_amount
-			)
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
-			ON CONFLICT (signature, instruction_index) DO UPDATE SET
-				slot = EXCLUDED.slot,
-				block_time = EXCLUDED.block_time,
-				action_type = EXCLUDED.action_type,
-				market_index = EXCLUDED.market_index,
-				perp_market_index = EXCLUDED.perp_market_index,
-				spot_market_index = EXCLUDED.spot_market_index,
-				direction = EXCLUDED.direction,
-				base_asset_amount = EXCLUDED.base_asset_amount,
-				price = EXCLUDED.price,
-				reduce_only = EXCLUDED.reduce_only,
-				leverage = EXCLUDED.leverage,
-				amount = EXCLUDED.amount,
-				token_account = EXCLUDED.token_account,
-				token_mint = EXCLUDED.token_mint,
-				token_amount = EXCLUDED.token_amount,
-				inserted_at = NOW()
-			"#,
-		)
-		.bind(&action.signature)
-		.bind(instruction_index)
-		.bind(slot)
-		.bind(action.block_time)
-		.bind(&action.action_type)
-		.bind(action.market_index.map(|v| v as i16))
-		.bind(action.perp_market_index.map(|v| v as i16))
-		.bind(action.spot_market_index.map(|v| v as i16))
-		.bind(direction)
-		.bind(base_asset_amount)
-		.bind(price)
-		.bind(action.reduce_only)
-		.bind(action.leverage)
-		.bind(amount)
-		.bind(token_account)
-		.bind(token_mint)
-		.bind(token_amount)
-		.execute(&mut *tx)
-		.await
-		.map_err(map_db_error)?;
-
-		rows += result.rows_affected();
-	}
-
-	tx.commit().await.map_err(map_db_error)?;
-	Ok(rows)
-}
-
-fn map_db_error(err: sqlx::Error) -> ApiError {
-	error!(?err, "database error");
-	ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, "database error")
-}
-
-fn to_i64(name: &str, value: u64) -> Result<i64, ApiError> {
-	i64::try_from(value).map_err(|_| {
-		ApiError::new(
-			StatusCode::BAD_REQUEST,
-			format!("{name} value exceeds i64 range"),
-		)
-	})
-}
-
-fn opt_u64_to_i64(name: &str, value: Option<u64>) -> Result<Option<i64>, ApiError> {
-	value
-		.map(|v| to_i64(name, v))
-		.transpose()
-}
-
-fn usize_to_i32(name: &str, value: usize) -> Result<i32, ApiError> {
-	i32::try_from(value).map_err(|_| {
-		ApiError::new(
-			StatusCode::BAD_REQUEST,
-			format!("{name} value exceeds i32 range"),
-		)
-	})
-}
 
 fn validate_wallet(wallet: &str) -> Result<(), ApiError> {
 	if wallet.len() < 32 {
@@ -369,11 +255,16 @@ async fn decode_signature_route(
 		.decoder
 		.decode_signature(signature)
 		.map_err(|err| {
-			error!(?err, "failed to decode signature", signature);
+			error!(?err, signature = signature, "failed to decode signature");
 			ApiError::new(StatusCode::BAD_GATEWAY, "failed to decode signature")
 		})?;
 
-	let rows_written = persist_actions(&state.db, &actions).await?;
+	let rows_written = db::insert_actions(state.db.as_ref(), &actions)
+		.await
+		.map_err(|err| {
+			error!(?err, "database error while persisting actions");
+			ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, "database error")
+		})?;
 
 	Ok(Json(DecodeSignatureResponse {
 		signature: signature.to_string(),

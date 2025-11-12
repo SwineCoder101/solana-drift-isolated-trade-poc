@@ -1,9 +1,10 @@
 use std::{
-    collections::HashMap,
-    env,
-    fmt,
-    str::FromStr,
-    time::Duration,
+	collections::HashMap,
+	env,
+	fmt,
+	str::FromStr,
+	sync::Arc,
+	time::Duration,
 };
 
 use anyhow::{bail, Context, Result};
@@ -15,7 +16,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use solana_client::{rpc_client::RpcClient, rpc_config::RpcTransactionConfig};
-use solana_rpc_client::http_sender::HttpSender;
+use solana_rpc_client::{http_sender::HttpSender, rpc_client::RpcClientConfig};
 use solana_sdk::{
     commitment_config::CommitmentConfig,
     instruction::CompiledInstruction,
@@ -42,8 +43,8 @@ static PLACE_PERP_ORDER_DISC: Lazy<[u8; 8]> =
 
 #[derive(Clone)]
 pub struct DriftDecoder {
-    client: RpcClient,
-    drift_program: Pubkey,
+	client: Arc<RpcClient>,
+	drift_program: Pubkey,
 }
 
 impl DriftDecoder {
@@ -56,10 +57,13 @@ impl DriftDecoder {
         Self::new(rpc_url, drift_program)
     }
 
-    pub fn new(rpc_url: impl Into<String>, drift_program: Pubkey) -> Result<Self> {
-        let client = build_rpc_client(rpc_url.into(), CommitmentConfig::confirmed())?;
-        Ok(Self { client, drift_program })
-    }
+	pub fn new(rpc_url: impl Into<String>, drift_program: Pubkey) -> Result<Self> {
+		let client = build_rpc_client(rpc_url.into(), CommitmentConfig::confirmed())?;
+		Ok(Self {
+			client: Arc::new(client),
+			drift_program,
+		})
+	}
 
     pub fn decode_signature(&self, sig_str: &str) -> Result<(SignatureDump, Vec<ActionRecord>)> {
         let signature = Signature::from_str(sig_str).context("invalid signature")?;
@@ -69,10 +73,10 @@ impl DriftDecoder {
             max_supported_transaction_version: Some(0),
         };
 
-        let tx = self
-            .client
-            .get_transaction_with_config(&signature, config)
-            .with_context(|| format!("fetching transaction {sig_str}"))?;
+	let tx = self
+		.client
+ 		.get_transaction_with_config(&signature, config)
+		.with_context(|| format!("fetching transaction {sig_str}"))?;
 
         let meta = tx
             .transaction
@@ -102,13 +106,13 @@ impl DriftDecoder {
 
             drift_ix_found = true;
 
-            let decode_result = match decode_drift_instruction(&ix.data) {
-                Ok(res) => res,
-                Err(err) => {
-                    tracing::error!("decode error", ?err, signature = sig_str, ix_idx);
-                    None
-                }
-            };
+		let decode_result = match decode_drift_instruction(&ix.data) {
+			Ok(res) => res,
+			Err(err) => {
+				tracing::error!(?err, signature = %sig_str, ix_idx, "decode error");
+				None
+			}
+		};
 
             let kind_label = decode_result
                 .as_ref()
@@ -144,9 +148,9 @@ impl DriftDecoder {
             });
         }
 
-        if !drift_ix_found {
-            tracing::warn!("no drift instructions", signature = sig_str);
-        }
+	if !drift_ix_found {
+		tracing::warn!(signature = %sig_str, "no drift instructions");
+	}
 
         Ok((
             SignatureDump {
@@ -664,4 +668,3 @@ fn build_action_record(
 
     Ok(Some(record))
 }
-

@@ -1,3 +1,4 @@
+pub mod db;
 pub mod decoder;
 pub mod executor;
 pub mod ipc;

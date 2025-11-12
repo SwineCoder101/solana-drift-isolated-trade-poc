@@ -2,8 +2,7 @@ use std::{net::SocketAddr, sync::Arc};
 
 use anyhow::Context;
 use axum::Router;
-use rust_api::{decoder::DriftDecoder, executor, ipc, routes::{self, AppState}};
-use sqlx::postgres::PgPoolOptions;
+use rust_api::{db, decoder::DriftDecoder, executor, ipc, routes::{self, AppState}};
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use tracing::info;
@@ -27,22 +26,15 @@ async fn main() -> anyhow::Result<()> {
 
 	let database_url = std::env::var("DATABASE_URL")
 		.context("DATABASE_URL not set")?;
-	let db = PgPoolOptions::new()
-		.max_connections(10)
-		.connect(&database_url)
-		.await
-		.context("failed to connect to database")?;
-	sqlx::migrate!()
-		.run(&db)
-		.await
-		.context("failed to run database migrations")?;
+	let (db_client, _db_handle) = db::connect(&database_url).await?;
+	db::run_migrations(db_client.as_ref()).await?;
 
 	let decoder = Arc::new(DriftDecoder::from_env()?);
 
 	let state = AppState {
 		ipc,
 		executor: Arc::new(executor),
-		db,
+		db: db_client.clone(),
 		decoder,
 	};
 
