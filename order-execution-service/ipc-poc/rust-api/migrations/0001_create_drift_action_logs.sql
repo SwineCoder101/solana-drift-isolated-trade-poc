@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS drift_action_logs (
+    signature TEXT NOT NULL,
+    instruction_index INTEGER NOT NULL,
+    slot BIGINT NOT NULL,
+    block_time BIGINT,
+    action_type TEXT NOT NULL,
+    market_index SMALLINT,
+    perp_market_index SMALLINT,
+    spot_market_index SMALLINT,
+    direction TEXT,
+    base_asset_amount BIGINT,
+    price BIGINT,
+    reduce_only BOOLEAN,
+    leverage DOUBLE PRECISION,
+    amount BIGINT,
+    token_account TEXT,
+    token_mint TEXT,
+    token_amount BIGINT,
+    inserted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    PRIMARY KEY (signature, instruction_index)
+);

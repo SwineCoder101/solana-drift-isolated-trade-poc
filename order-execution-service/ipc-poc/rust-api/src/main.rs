@@ -1,12 +1,9 @@
-mod ipc;
-mod executor;
-mod routes;
-mod types;
+use std::{net::SocketAddr, sync::Arc};
 
-use std::net::SocketAddr;
-
+use anyhow::Context;
 use axum::Router;
-use routes::{router, AppState};
+use rust_api::{decoder::DriftDecoder, executor, ipc, routes::{self, AppState}};
+use sqlx::postgres::PgPoolOptions;
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use tracing::info;
@@ -28,9 +25,28 @@ async fn main() -> anyhow::Result<()> {
 	let executor = executor::TxExecutor::from_env()
 		.map_err(|err| anyhow::anyhow!("executor init failed: {err}"))?;
 
-	let state = AppState { ipc, executor: std::sync::Arc::new(executor) };
+	let database_url = std::env::var("DATABASE_URL")
+		.context("DATABASE_URL not set")?;
+	let db = PgPoolOptions::new()
+		.max_connections(10)
+		.connect(&database_url)
+		.await
+		.context("failed to connect to database")?;
+	sqlx::migrate!()
+		.run(&db)
+		.await
+		.context("failed to run database migrations")?;
 
-	let app: Router = router(state).layer(
+	let decoder = Arc::new(DriftDecoder::from_env()?);
+
+	let state = AppState {
+		ipc,
+		executor: Arc::new(executor),
+		db,
+		decoder,
+	};
+
+	let app: Router = routes::router(state).layer(
 		ServiceBuilder::new()
 			.layer(TraceLayer::new_for_http())
 			.layer(CorsLayer::permissive()),
