@@ -21,5 +21,11 @@ base64 = "0.22"
 bs58 = "0.5"
 solana-sdk = "1.18.23"
 solana-client = "1.18.23"
+solana-transaction-status = "1.18.23"
+solana-rpc-client = "1.18.23"
 
 bincode = "1"
+borsh = { version = "1", features = ["derive"] }
+sha2 = "0.10"
+once_cell = "1"
+reqwest = "0.11"

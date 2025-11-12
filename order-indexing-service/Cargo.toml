@@ -4,24 +4,25 @@ resolver = "2"
 
 [workspace.dependencies]
 anyhow = "1"
-axum = "0.7"
+axum = "0.8.6"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
 url = "2"
-hex = "0.4"
-borsh = "0.10"
+hex = "0.4.3"
+borsh = "1.5.7"
 dotenvy = "0.15"
 chrono = { version = "0.4", features = ["serde"] }
 
 [workspace.dependencies.sqlx]
 version = "0.7"
-features = ["runtime-tokio-rustls", "postgres", "macros"]
+features = ["runtime-tokio-rustls", "postgres", "macros", "chrono"]
+default-features = false
 
 [workspace.dependencies.spl-memo]
-version = "4"
+version = "6.0.0"
 
 [workspace.dependencies.solana-program]
 version = "1.18"
@@ -31,3 +32,4 @@ version = "1.18"
 
 [workspace.dependencies.solana-transaction-status]
 version = "1.18"
+

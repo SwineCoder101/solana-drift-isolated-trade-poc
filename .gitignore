@@ -26,3 +26,6 @@ target/
 dist/
 **/target/
 **/dist/
+
+
+order-indexing-service/.env

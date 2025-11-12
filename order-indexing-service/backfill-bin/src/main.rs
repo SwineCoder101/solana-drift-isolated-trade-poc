@@ -14,6 +14,12 @@ use tracing::{error, info, warn};
 
 #[tokio::main]
 async fn main() -> Result<()> {
+
+
+    // HARDCODED SIGNATURES FOR TESTING
+    const WITHDRAW_FROM_ISOLATED_PERP_POSITION_SIGNATURE: &str = "4mXkvzqN1n8WmF82Xb9C9teZhF6GJeGkUcupNshLFBdiB8idTuWET3BzTtgNZo4bvnPgKbRusQCX9pXjGTpSdF3K";
+    const PLACE_PERP_ORDER_SIGNATURE: &str = "MnmqKomt5SZW2YYmic3aUqi8LFCSr6tGxngsiJfW8s1NTZdmvNrUW6h2C8Uz3D8UuzFeedgsthWSqqvz7rEz8Cv";
+    const DEPOSIT_INTO_ISOLATED_PERP_POSITION_SIGNATURE: &str = "4w1WV3b8Z1FkE4W5JzyMyc3SR2jLP5jaoDQPNxfDTWZJtR9p5dFSa7zsaDQgDedy2D4DDi8LAY6LXKndRqTHCk5X";
     tracing_subscriber::fmt::init();
     dotenvy::dotenv().ok();
 

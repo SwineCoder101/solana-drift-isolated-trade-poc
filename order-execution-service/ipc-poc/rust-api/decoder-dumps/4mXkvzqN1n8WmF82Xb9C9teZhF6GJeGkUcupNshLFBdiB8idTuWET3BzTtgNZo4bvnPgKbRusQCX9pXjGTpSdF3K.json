@@ -1,0 +1,142 @@
+{
+  "signature": "4mXkvzqN1n8WmF82Xb9C9teZhF6GJeGkUcupNshLFBdiB8idTuWET3BzTtgNZo4bvnPgKbRusQCX9pXjGTpSdF3K",
+  "slot": 420934741,
+  "block_time": 1762904359,
+  "instructions": [
+    {
+      "index": 0,
+      "discriminator": "25:5c:b2:95:8c:4c:9f:87",
+      "raw_data_b64": "JVyylYxMn4cAAAAAQEIPAAAAAAA=",
+      "data_len": 20,
+      "program_id": "dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH",
+      "kind": "withdrawFromIsolatedPerpPosition",
+      "args": {
+        "amount": 1000000,
+        "perpMarketIndex": 0,
+        "spotMarketIndex": 0
+      },
+      "accounts": [
+        {
+          "position": 0,
+          "accountIndex": 10,
+          "pubkey": "5zpq7DvB6UdFFvpmBPspGPNfUGoBRRCE2HHg5u3gxcsN",
+          "is_signer": false,
+          "is_writable": false,
+          "role": "state"
+        },
+        {
+          "position": 1,
+          "accountIndex": 4,
+          "pubkey": "BF8mqQNZNVybuM62jNsSSMS1PnU8XPVNo2W8QKXP9e1H",
+          "is_signer": false,
+          "is_writable": true,
+          "role": "user"
+        },
+        {
+          "position": 2,
+          "accountIndex": 1,
+          "pubkey": "5qKmjb7kqk3U6nSZnQ3GB21aGMBAY7NHgx1CwGvXcp6F",
+          "is_signer": false,
+          "is_writable": true,
+          "role": "userStats"
+        },
+        {
+          "position": 3,
+          "accountIndex": 0,
+          "pubkey": "9Bowq8e5ZCPG5ff3oKskg7yz4GRWCJvUJ2GZzPeLv3sg",
+          "is_signer": true,
+          "is_writable": true,
+          "role": "authority"
+        },
+        {
+          "position": 4,
+          "accountIndex": 5,
+          "pubkey": "GXWqPpjQpdz7KZw9p7f5PX2eGxHAhvpNXiviFkAB8zXg",
+          "is_signer": false,
+          "is_writable": true,
+          "role": "spotMarketVault"
+        },
+        {
+          "position": 5,
+          "accountIndex": 14,
+          "pubkey": "JCNCMFXo5M5qwUPg2Utu1u6YWp3MbygxqBsBeXXJfrw",
+          "is_signer": false,
+          "is_writable": false,
+          "role": "driftSigner"
+        },
+        {
+          "position": 6,
+          "accountIndex": 3,
+          "pubkey": "9rYnYudUfgj8udv7ZV2S5yuMce11NE1gznafPgKkz6uJ",
+          "is_signer": false,
+          "is_writable": true,
+          "role": "userTokenAccount"
+        },
+        {
+          "position": 7,
+          "accountIndex": 15,
+          "pubkey": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "is_signer": false,
+          "is_writable": false,
+          "role": "tokenProgram"
+        },
+        {
+          "position": 8,
+          "accountIndex": 12,
+          "pubkey": "9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV",
+          "is_signer": false,
+          "is_writable": false,
+          "role": null
+        },
+        {
+          "position": 9,
+          "accountIndex": 8,
+          "pubkey": "3m6i4RFWEDw2Ft4tFHPJtYgmpPe21k56M3FHeWYrgGBz",
+          "is_signer": false,
+          "is_writable": false,
+          "role": null
+        },
+        {
+          "position": 10,
+          "accountIndex": 7,
+          "pubkey": "35MbvS1Juz2wf7GsyHrkCw8yfKciRLxVpEhfZDZFrB4R",
+          "is_signer": false,
+          "is_writable": false,
+          "role": null
+        },
+        {
+          "position": 11,
+          "accountIndex": 2,
+          "pubkey": "6gMq3mRCKf8aP3ttTyYhuijVZ2LGi14oDsBbkgubfLB3",
+          "is_signer": false,
+          "is_writable": true,
+          "role": null
+        },
+        {
+          "position": 12,
+          "accountIndex": 9,
+          "pubkey": "3x85u7SWkmmr7YQGYhtjARgxwegTLJgkSLRprfXod6rh",
+          "is_signer": false,
+          "is_writable": false,
+          "role": null
+        },
+        {
+          "position": 13,
+          "accountIndex": 11,
+          "pubkey": "8UJgxaiQx5nTrdDgph5FiahMmzduuLTLf5WmsPegYA6W",
+          "is_signer": false,
+          "is_writable": false,
+          "role": null
+        },
+        {
+          "position": 14,
+          "accountIndex": 6,
+          "pubkey": "2UZMvVTBQR9yWxrEdzEQzXWE61bUjqQ5VpJAGqVb3B19",
+          "is_signer": false,
+          "is_writable": false,
+          "role": null
+        }
+      ]
+    }
+  ]
+}
