@@ -18,6 +18,7 @@ import { OrderSide } from '../types/trading';
 const ORDER_EXECUTION_URL =
   process.env.NEXT_PUBLIC_ORDER_EXECUTION_URL ?? process.env.NEXT_PUBLIC_EXECUTION_API ?? 'http://localhost:8080';
 const DRIFT_INDEXER_URL = process.env.NEXT_PUBLIC_DRIFT_INDEXER_URL ?? 'http://localhost:4000';
+const TRADE_HISTORY_LIMIT = 150;
 
 const MARKET_OPTIONS = DevnetPerpMarkets.map((cfg) => ({
 	value: `PERP_${cfg.baseAssetSymbol.toUpperCase()}`,
@@ -38,6 +39,8 @@ function HomePage() {
   const [status, setStatus] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [tradeHistory, setTradeHistory] = useState<HistoryEntry[]>([]);
+  const [tradeHistoryRefreshing, setTradeHistoryRefreshing] = useState(false);
+  const [tradeHistoryError, setTradeHistoryError] = useState<string | null>(null);
 
   const { adminWallet } = useAdminWallet(ORDER_EXECUTION_URL);
   const { balances, status: balancesStatus, loading: balancesLoading, refreshBalances } = useBalances(
@@ -56,21 +59,44 @@ function HomePage() {
     resolvedWallet,
   );
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const res = await fetch(`${ORDER_EXECUTION_URL}/actions/history?limit=50`);
-        if (!res.ok) {
-          throw new Error('Failed to load trade history');
-        }
-        const data: HistoryEntry[] = await res.json();
-        setTradeHistory(data);
-      } catch (err) {
-        console.error('Failed to fetch trade history', err);
+  const fetchTradeHistory = useCallback(async () => {
+    setTradeHistoryRefreshing(true);
+    setTradeHistoryError(null);
+    try {
+      const res = await fetch(`${ORDER_EXECUTION_URL}/actions/history?limit=${TRADE_HISTORY_LIMIT}`);
+      if (!res.ok) {
+        const payload = await res
+          .json()
+          .catch(() => ({ error: `HTTP ${res.status}` }));
+        const message =
+          typeof payload?.error === 'string'
+            ? payload.error
+            : `Failed to load trade history (HTTP ${res.status})`;
+        setTradeHistoryError(message);
+        console.warn('Trade history fetch returned non-OK status', {
+          status: res.status,
+          body: payload,
+        });
+        setTradeHistory([]);
+        return;
       }
-    };
-    void fetchHistory();
+      const data: HistoryEntry[] = await res.json();
+      setTradeHistory(data);
+      setTradeHistoryError(null);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Unable to load trade history';
+      setTradeHistoryError(message);
+      console.error('Failed to fetch trade history', err);
+      setTradeHistory([]);
+    } finally {
+      setTradeHistoryRefreshing(false);
+    }
   }, []);
+
+  useEffect(() => {
+    void fetchTradeHistory();
+  }, [fetchTradeHistory]);
 
   const addHistory = useCallback((entry: Partial<HistoryEntry>) => {
     setTradeHistory((prev) => [{
@@ -126,6 +152,7 @@ function HomePage() {
       setStatus(`Order submitted: ${payload.txSignature ?? 'pending signature'}`);
       await refreshPositions();
       await refreshBalances();
+      await fetchTradeHistory();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unexpected error';
       setStatus(message);
@@ -154,6 +181,7 @@ function HomePage() {
       setStatus(`Close submitted: ${payload.txSignature ?? 'pending signature'}`);
       await refreshPositions();
       await refreshBalances();
+      await fetchTradeHistory();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Close failed';
       setStatus(message);
@@ -188,6 +216,7 @@ function HomePage() {
       setStatus(`Withdraw submitted: ${payload.txSignature ?? 'pending signature'}`);
       await refreshPositions();
       await refreshBalances();
+      await fetchTradeHistory();
       addHistory({ action_type: 'withdraw', amount: amt });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Withdraw failed';
@@ -223,6 +252,7 @@ function HomePage() {
       setStatus(`Margin deposited: ${payload.txSignature ?? 'signature unavailable'}`);
       await refreshPositions();
       await refreshBalances();
+      await fetchTradeHistory();
       addHistory({ action_type: 'deposit', amount: amt });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Deposit failed';
@@ -325,7 +355,14 @@ function HomePage() {
             onDeposit={handleDepositIsolated}
           />
 
-          <TradeHistory history={tradeHistory} />
+          <TradeHistory
+            history={tradeHistory}
+            refreshing={tradeHistoryRefreshing}
+            error={tradeHistoryError}
+            onRefresh={() => {
+              void fetchTradeHistory();
+            }}
+          />
         </main>
       </div>
     </>

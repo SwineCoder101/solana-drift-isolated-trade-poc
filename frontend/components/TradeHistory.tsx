@@ -15,11 +15,40 @@ export interface HistoryEntry {
 	instruction_index?: number;
 }
 
-export function TradeHistory({ history }: { history: HistoryEntry[] }) {
+interface TradeHistoryProps {
+	history: HistoryEntry[];
+	refreshing?: boolean;
+	error?: string | null;
+	onRefresh?: () => void;
+}
+
+export function TradeHistory({
+	history,
+	refreshing = false,
+	error = null,
+	onRefresh,
+}: TradeHistoryProps) {
 	return (
 		<section className="card history-card tabular-pane">
-			<h2>Trade History</h2>
-			{history.length === 0 ? (
+			<header className="card-header">
+				<h2>Trade History</h2>
+				{onRefresh ? (
+					<button
+						type="button"
+						onClick={onRefresh}
+						disabled={refreshing}
+						className="secondary"
+					>
+						{refreshing ? 'Refreshing…' : 'Refresh'}
+					</button>
+				) : null}
+			</header>
+			{error ? (
+				<p className="error-text">
+					{error}
+					{onRefresh ? ' — please try refreshing.' : ''}
+				</p>
+			) : history.length === 0 ? (
 				<p>No trades recorded yet.</p>
 			) : (
 				<div className="table-wrapper">

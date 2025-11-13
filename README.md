@@ -141,7 +141,7 @@ Every request is logged (`url`, label, JSON payload). IPC calls have a default t
 | Binary | Method & Path | Description |
 | --- | --- | --- |
 | `indexer-bin` | `GET /health` | Returns `{ status, last_slot, last_signature }`. The process also streams Drift logs over WebSocket (`RPC_WS_URL`), re-fetches each tx via HTTP RPC, and inserts rows into `trade_history`. |
-| `history-bin` | `GET /history?wallet=<pubkey>&limit=50&offset=0` | Reads from Postgres and returns canonical trade entries (signature, action, amount, asset symbol/mint, slot, block time). Defaults to the admin wallet when `wallet` is omitted. |
+| `history-bin` | `GET /history?wallet=<pubkey>&limit=150&offset=0` | Reads from Postgres and returns canonical trade entries (signature, action, amount, asset symbol/mint, slot, block time). Defaults to the admin wallet when `wallet` is omitted. |
 | `backfill-bin` | _CLI only_ | `cargo run -p backfill-bin` reads signatures for the admin wallet + Drift account (up to `BACKFILL_LIMIT` each), fetches the transactions, and inserts missing trades. Idempotent via `ON CONFLICT (signature) DO NOTHING`. |
 
 The frontend should prefer `/history` for the trade table once the indexing service is running; until then, `/trade-history` from the order-execution worker can act as a fallback.

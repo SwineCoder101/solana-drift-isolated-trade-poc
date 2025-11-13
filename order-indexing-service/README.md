@@ -74,7 +74,7 @@ cargo run -p history-bin
 The history API responds to:
 
 ```
-GET /history?wallet=<optional>&limit=50&offset=0
+GET /history?wallet=<optional>&limit=150&offset=0
 ```
 
 It returns the most recent trades (defaults to the admin wallet when `wallet`

@@ -132,6 +132,9 @@ struct HistoryQuery {
     limit: Option<i64>,
 }
 
+const MAX_HISTORY_LIMIT: i64 = 166;
+const MAX_HISTORY_DB_ROWS: i64 = 500;
+
 #[derive(Serialize)]
 struct HistoryEntry {
     signature: String,
@@ -178,6 +181,29 @@ async fn open_isolated_execute(
     );
     let value = open_isolated_build(&state, &body).await?;
     let executed = execute_transaction(&state, value).await?;
+
+    if let Some(signature) = executed
+        .get("txSignature")
+        .and_then(|v| v.as_str())
+        .map(str::trim)
+        .filter(|sig| !sig.is_empty())
+    {
+        match decode_and_store_signature(&state, signature).await {
+            Ok(rows) => {
+                info!(
+                    "[OPEN_ISOLATED_EXECUTE] decoded signature stored rows={rows} signature={signature}"
+                );
+            }
+            Err(err) => {
+                warn!(
+                    "[OPEN_ISOLATED_EXECUTE] failed to persist decoded actions signature={signature} error={err}"
+                );
+            }
+        }
+    } else {
+        warn!("[OPEN_ISOLATED_EXECUTE] txSignature missing from worker response");
+    }
+
     Ok(Json(executed))
 }
 
@@ -306,8 +332,8 @@ async fn get_admin_history(
     State(state): State<AppState>,
     Query(query): Query<HistoryQuery>,
 ) -> Result<Json<Vec<HistoryEntry>>, ApiError> {
-    let limit = query.limit.unwrap_or(100).clamp(1, 1000);
-    let fetch_limit = (limit * 3) as i64;
+    let limit = query.limit.unwrap_or(100).clamp(1, MAX_HISTORY_LIMIT);
+    let fetch_limit = (limit * 3).min(MAX_HISTORY_DB_ROWS);
     let actions = db::fetch_actions(state.db.as_ref(), fetch_limit)
         .await
         .map_err(|err| {
@@ -1021,6 +1047,17 @@ async fn execute_transaction(state: &AppState, mut value: Value) -> Result<Value
         obj.insert("txSignature".into(), json!(signature.to_string()));
     }
     Ok(value)
+}
+
+async fn decode_and_store_signature(state: &AppState, signature: &str) -> Result<u64, String> {
+    let (_, actions) = state
+        .decoder
+        .decode_signature(signature)
+        .map_err(|err| format!("decode failed: {err:?}"))?;
+
+    db::insert_actions(state.db.as_ref(), &actions)
+        .await
+        .map_err(|err| format!("database insert failed: {err:?}"))
 }
 
 fn map_executor_error(err: ExecutorError) -> ApiError {
