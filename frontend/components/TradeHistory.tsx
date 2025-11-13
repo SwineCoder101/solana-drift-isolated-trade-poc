@@ -1,3 +1,10 @@
+import { DevnetPerpMarkets } from '../lib/perpMarkets';
+
+const DEVNET_EXPLORER_BASE = 'https://explorer.solana.com/tx';
+const PERP_INDEX_TO_SYMBOL = new Map(
+	DevnetPerpMarkets.map(({ marketIndex, symbol }) => [marketIndex, symbol] as const)
+);
+
 export interface HistoryEntry {
 	signature: string;
 	slot: number;
@@ -60,7 +67,7 @@ export function TradeHistory({
 							<th>Direction</th>
 							<th>Market</th>
 							<th>Amount</th>
-							<th>Token</th>
+							<th>Signature</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -71,7 +78,7 @@ export function TradeHistory({
 							<td>{item.direction ? item.direction.toUpperCase() : '—'}</td>
 							<td>{renderMarket(item)}</td>
 							<td className="numeric">{renderTokenAmount(item.amount)}</td>
-							<td className="numeric">{renderTokenAmount(item.token_amount)}</td>
+							<td className="signature-cell">{renderSignature(item.signature)}</td>
 						</tr>
 					))}
 					</tbody>
@@ -95,7 +102,8 @@ function formatAction(action: string) {
 
 function renderMarket(item: HistoryEntry) {
 	if (item.perp_market_index !== undefined) {
-		return `Perp ${item.perp_market_index}`;
+		const mapped = PERP_INDEX_TO_SYMBOL.get(item.perp_market_index);
+		return mapped ?? `Perp ${item.perp_market_index}`;
 	}
 	if (item.spot_market_index !== undefined) {
 		return `Spot ${item.spot_market_index}`;
@@ -114,4 +122,19 @@ function renderAmount(value?: number) {
 function renderTokenAmount(value?: number) {
 	if (!value) return '—';
 	return (value / 1_000_000).toFixed(2);
+}
+
+function renderSignature(signature?: string) {
+	if (!signature) return '—';
+	const href = `${DEVNET_EXPLORER_BASE}/${signature}?cluster=devnet`;
+	return (
+		<a href={href} target="_blank" rel="noreferrer" title={signature}>
+			{shorten(signature)}
+		</a>
+	);
+}
+
+function shorten(value: string) {
+	if (value.length <= 10) return value;
+	return `${value.slice(0, 4)}...${value.slice(-4)}`;
 }
