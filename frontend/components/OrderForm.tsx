@@ -1,9 +1,14 @@
 import { FormEvent } from 'react';
 import { OrderSide } from '../types/trading';
 
+interface MarketOption {
+	value: string;
+	label: string;
+}
+
 interface OrderFormProps {
-  assets: string[];
-  asset: string;
+	assets: MarketOption[];
+	asset: string;
   side: OrderSide;
   leverage: number;
   initialAmount: string;
@@ -38,14 +43,14 @@ export function OrderForm({
       <form onSubmit={onSubmit} className="form-grid">
         <label>
           Market
-          <select value={asset} onChange={(e) => onAssetChange(e.target.value)}>
-            {assets.map((symbol) => (
-              <option key={symbol} value={symbol}>
-                {symbol}
-              </option>
-            ))}
-          </select>
-        </label>
+			<select value={asset} onChange={(e) => onAssetChange(e.target.value)}>
+				{assets.map((option) => (
+					<option key={option.value} value={option.value}>
+						{option.label}
+					</option>
+				))}
+			</select>
+		</label>
 
         <label>
           Side

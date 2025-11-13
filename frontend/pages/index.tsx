@@ -2,6 +2,7 @@ import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { DevnetPerpMarkets } from '../lib/perpMarkets';
 
 import { BalancesCard } from '../components/BalancesCard';
 import { OrderForm } from '../components/OrderForm';
@@ -18,7 +19,10 @@ const ORDER_EXECUTION_URL =
   process.env.NEXT_PUBLIC_ORDER_EXECUTION_URL ?? process.env.NEXT_PUBLIC_EXECUTION_API ?? 'http://localhost:8080';
 const DRIFT_INDEXER_URL = process.env.NEXT_PUBLIC_DRIFT_INDEXER_URL ?? 'http://localhost:4000';
 
-const ASSETS = ['PERP_SOL', 'PERP_BTC', 'PERP_ETH'];
+const MARKET_OPTIONS = DevnetPerpMarkets.map((cfg) => ({
+	value: `PERP_${cfg.baseAssetSymbol.toUpperCase()}`,
+	label: cfg.symbol,
+}));
 
 const WalletMultiButtonDynamic = dynamic(
   async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
@@ -27,7 +31,7 @@ const WalletMultiButtonDynamic = dynamic(
 
 function HomePage() {
   const { publicKey } = useWallet();
-  const [asset, setAsset] = useState<string>(ASSETS[0]);
+	const [asset, setAsset] = useState<string>(MARKET_OPTIONS[0]?.value ?? '');
   const [side, setSide] = useState<OrderSide>('long');
   const [leverage, setLeverage] = useState<number>(5);
   const [initialAmount, setInitialAmount] = useState<string>('1');
@@ -293,8 +297,8 @@ function HomePage() {
             />
           </div>
 
-          <OrderForm
-            assets={ASSETS}
+	<OrderForm
+		assets={MARKET_OPTIONS}
             asset={asset}
             side={side}
             leverage={leverage}

@@ -1128,7 +1128,8 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 	// 2. Isolated margin deposited (even if position is closed)
 	const positions = await Promise.all(
 		userAccount.perpPositions.map(async (pos) => {
-			const hasPosition = !pos.baseAssetAmount.eq(new BN(0));
+			const hasBaseAsset = pos.baseAssetAmount && typeof pos.baseAssetAmount.eq === 'function';
+			const hasPosition = hasBaseAsset ? !pos.baseAssetAmount.eq(new BN(0)) : false;
 			if (hasPosition) {
 				return { pos, hasIsolatedMargin: true };
 			}
@@ -1148,8 +1149,13 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 	const marketMap = new Map<number, typeof positions[0]>();
 	for (const item of positions) {
 		const { pos, hasIsolatedMargin } = item;
-		const hasPosition = !pos.baseAssetAmount.eq(new BN(0));
+		const hasPosition = pos.baseAssetAmount && typeof pos.baseAssetAmount.eq === 'function'
+			? !pos.baseAssetAmount.eq(new BN(0))
+			: false;
 		const existing = marketMap.get(pos.marketIndex);
+		const existingHasPosition = existing?.pos.baseAssetAmount && typeof existing.pos.baseAssetAmount.eq === 'function'
+			? !existing.pos.baseAssetAmount.eq(new BN(0))
+			: false;
 		
 		// Skip if no position and no margin
 		if (!hasPosition && !hasIsolatedMargin) {
@@ -1157,7 +1163,7 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 		}
 		
 		// Add if market not seen, or replace if current has position and existing doesn't
-		if (!existing || (hasPosition && !existing.pos.baseAssetAmount.eq(new BN(0)))) {
+		if (!existing || (hasPosition && !existingHasPosition)) {
 			marketMap.set(pos.marketIndex, item);
 		}
 	}
@@ -1240,24 +1246,45 @@ export async function getPositionDetails(req: WalletOnlyReq) {
 			const pnl = calculatePositionPNL(perpMarket, pos, true, oracle);
 			const unrealizedPnl = convertToNumber(pnl, QUOTE_PRECISION);
 
-			const margin = convertToNumber(
-				pos.isolatedPositionScaledBalance ?? ZERO,
-				QUOTE_PRECISION
-			);
 			const notional = Math.abs(size) * currentPrice;
-			const leverage =
-				margin > 0 ? Number((notional / margin).toFixed(4)) : null;
-			
-			// Get isolated margin using the cached user context
-			const isolatedMargin = await withAuthority(walletPk, async () => {
-				return convertToNumber(
-					driftClient.getIsolatedPerpPositionTokenAmount(pos.marketIndex) ?? ZERO,
+			let isolatedMargin = 0;
+			let effectiveMargin: number | null = null;
+
+			if (userHelper) {
+				try {
+					const depositBn =
+						userHelper.getIsolatePerpPositionTokenAmount(pos.marketIndex) ?? ZERO;
+					isolatedMargin = convertToNumber(depositBn, QUOTE_PRECISION);
+					const marketPnlBn =
+						userHelper.getUnrealizedPNL(true, pos.marketIndex) ?? ZERO;
+					const marketPnl = convertToNumber(marketPnlBn, QUOTE_PRECISION);
+					const marginWithPnl = isolatedMargin + marketPnl;
+					if (marginWithPnl > 0) {
+						effectiveMargin = marginWithPnl;
+					}
+				} catch (err) {
+					debugLog('position details: isolated margin calc failed', err);
+				}
+			}
+
+			if (effectiveMargin === null) {
+				// Fallback to scaled balance if helper context is unavailable
+				isolatedMargin = convertToNumber(
+					pos.isolatedPositionScaledBalance ?? ZERO,
 					QUOTE_PRECISION
 				);
-			});
+				if (isolatedMargin > 0) {
+					effectiveMargin = isolatedMargin;
+				}
+			}
+
+			const leverage =
+				effectiveMargin !== null
+					? Number((notional / effectiveMargin).toFixed(4))
+					: null;
 
 			let liquidationPrice: number | null = null;
-			if (userHelper) {
+			if (userHelper && pos.baseAssetAmount && typeof pos.baseAssetAmount.eq === 'function') {
 				try {
 					// Only calculate liquidation price if there's an actual position
 					if (!pos.baseAssetAmount.eq(new BN(0))) {
